@@ -4,4 +4,4 @@
 - I'll put demos later
 
 ## Assignment
-- [Interactive Scene](Interactive Scene)
+- [Interactive Scene](interactive scene)
