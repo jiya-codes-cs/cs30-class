@@ -40,7 +40,7 @@ function draw() {
 
   if (screen === 0) {
     // nothing else needed — button is already there
-  }
+  } 
   else if (screen === 1) {
     drawBall();
   }
