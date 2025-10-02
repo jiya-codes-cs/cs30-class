@@ -21,8 +21,24 @@ function preload() {
   myFont = loadFont('PressStart2P-Regular.ttf');
 }
 
+function windowResized() {
+  if (windowWidth > windowHeight) {
+    createCanvas(windowHeight, windowHeight);
+  } 
+  else {
+    createCanvas(windowWidth, windowWidth);
+  }
+}
+
 function setup() {
-  createCanvas(400, 400);
+  if (windowWidth > windowHeight) {
+    createCanvas(windowHeight, windowHeight);
+  } 
+  else {
+    createCanvas(windowWidth, windowWidth);
+  }
+  noLoop();
+  
   button = createButton("Click to Start");
   button.style('font-family', 'myFont' );
   button.style('font-size', '20px' );
@@ -33,6 +49,7 @@ function setup() {
     screen = 1;
     button.hide(); // hide button when switching screens
   });
+  
 }
 
 function draw() {
@@ -42,25 +59,37 @@ function draw() {
     // nothing else needed — button is already there
   } 
   else if (screen === 1) {
-    drawBall();
+    // drawBall();
+    makeSquares();
   }
 }
 
-function drawBall() {
-  // move ball
-  ballX += ballDX;
-  ballY += ballDY;
+function makeSquares(){
+  let columns = 6;
+  let rows = 5;
+  sizeOfSquare = width/columns;
 
-  // bounce off edges
-  if (ballX < ballSize/2 || ballX > width - ballSize/2) {
-    ballDX *= -1;
+  for (let a = 0; a < columns; a++) {
+    for (let b = 0; b < columns; b ++) {
+      rect(a * sizeOfSquare, b * sizeOfSquare, 125, 100);
+    }
   }
-  if (ballY < ballSize/2 || ballY > height - ballSize/2) {
-    ballDY *= -1;
-  }
-
-  // draw ball
-  fill(100, 150, 255);
-  ellipse(ballX, ballY, ballSize, ballSize);
 }
+// function drawBall() {
+//   // move ball
+//   ballX += ballDX;
+//   ballY += ballDY;
+
+//   // bounce off edges
+//   if (ballX < ballSize/2 || ballX > width - ballSize/2) {
+//     ballDX *= -1;
+//   }
+//   if (ballY < ballSize/2 || ballY > height - ballSize/2) {
+//     ballDY *= -1;
+//   }
+
+//   // draw ball
+//   fill(100, 150, 255);
+//   ellipse(ballX, ballY, ballSize, ballSize);
+// }
 
