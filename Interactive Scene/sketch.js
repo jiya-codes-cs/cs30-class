@@ -59,7 +59,6 @@ function draw() {
     // nothing else needed — button is already there
   } 
   else if (screen === 1) {
-    // drawBall();
     makeSquares();
   }
 }
@@ -71,25 +70,11 @@ function makeSquares(){
 
   for (let a = 0; a < columns; a++) {
     for (let b = 0; b < columns; b ++) {
+      //makes a screen with boxes
       rect(a * sizeOfSquare, b * sizeOfSquare, windowWidth, windowHeight);
+      fill ("grey");
     }
   }
 }
-// function drawBall() {
-//   // move ball
-//   ballX += ballDX;
-//   ballY += ballDY;
 
-//   // bounce off edges
-//   if (ballX < ballSize/2 || ballX > width - ballSize/2) {
-//     ballDX *= -1;
-//   }
-//   if (ballY < ballSize/2 || ballY > height - ballSize/2) {
-//     ballDY *= -1;
-//   }
-
-//   // draw ball
-//   fill(100, 150, 255);
-//   ellipse(ballX, ballY, ballSize, ballSize);
-// }
 
