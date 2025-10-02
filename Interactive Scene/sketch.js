@@ -71,7 +71,7 @@ function makeSquares(){
 
   for (let a = 0; a < columns; a++) {
     for (let b = 0; b < columns; b ++) {
-      rect(a * sizeOfSquare, b * sizeOfSquare, 125, 100);
+      rect(a * sizeOfSquare, b * sizeOfSquare, windowWidth, windowHeight);
     }
   }
 }
