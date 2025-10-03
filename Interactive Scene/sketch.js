@@ -10,11 +10,6 @@ let screen = 0; // 0 = button screen, 1 = ball screen
 let button;
 
 // ball variables
-let ballX = 300;
-let ballY = 300;
-let ballDX = 3;
-let ballDY = 2;
-let ballSize = 40;
 let myFont;
 
 function preload() {
@@ -66,13 +61,23 @@ function draw() {
 function makeSquares(){
   let columns = 6;
   let rows = 5;
-  sizeOfSquare = width/columns;
+  sizeOfSquare = width/10;
+  let totalGridWidth = columns * sizeOfSquare;
+  let totalGridHeight = rows * sizeOfSquare;
 
-  for (let a = 0; a < columns; a++) {
+  // Setting the position to center horizontally
+  let startX = (width - totalGridWidth) / 2;
+
+  // Aligning the code to the top of the page (also left some margin for neatness)
+  let startY = height * 0.1;
+  noFill();
+  stroke ("grey");
+  strokeWeight(3);
+
+  for (let a = 0; a < rows; a++) {
     for (let b = 0; b < columns; b ++) {
       //makes a screen with boxes
-      rect(a * sizeOfSquare, b * sizeOfSquare, windowWidth, windowHeight);
-      fill ("grey");
+      rect( startX + b * sizeOfSquare, startY  + a * sizeOfSquare, sizeOfSquare, sizeOfSquare);
     }
   }
 }
