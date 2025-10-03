@@ -8,7 +8,19 @@
 
 let screen = 0; // 0 = button screen, 1 = wordle screen
 let button;
+let columns = 6;
+let rows = 5;
+let sizeOfSquare;
+let gap;
+let startX;
+let startY;
 
+let words = ["APPLE", "QUERY", "DATES", "TROVE", "QUILL", "GLYPH", "SMITE", "ALOFT", "SLEEK", "HUMOR", "JAZZY", "TRITE", "FOUND", "FUDGE", "SWIFT", "YATCH", "DROLL", "JOLLY", "HATER", "SWILL"]; //20 words
+
+let chosenWord = "";
+let currentRow = 0;
+let currentColumn = 0;
+let guesses = []; // stores letters
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -36,21 +48,26 @@ function setup() {
 }
 
 function draw() {
-  background("lightblue");
+  background("white");
 
   if (screen === 0) {
-    background("lightblue");
-    // nothing else needed — button is already there
+    // nothing else needed (button is already there)
   } 
   else {
-    background("white");
     makeSquares();
+    drawLetters();
   }
 }
 
+function startGame(){
+  // choses a random word 
+  chosenWord = random(words);
+  currentRow = 0;
+  currentColumn = 0;
+  guesses = Array(rows). fill().map(() => Array(columns).fill(''));
+  console.log("Word to guess:", chosenWord); // for testing
+}
 function makeSquares(){
-  let columns = 6;
-  let rows = 5;
   sizeOfSquare = width / 12; // slightly smaller so spacing fits
   let gap = sizeOfSquare * 0.2; // 20% of the box size is spacing
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
@@ -61,9 +78,6 @@ function makeSquares(){
 
   // align near top
   let startY = height * 0.1; // 10% from top is needed for spacing
-  
-
-  
   noFill();
   stroke ("grey");
   strokeWeight(3);
@@ -78,4 +92,18 @@ function makeSquares(){
   }
 }
 
+function drawLetters() {
+  textAlign(CENTER,CENTER);
+  textSize(sizeOfSquare * 0.6);
+  fill(0);
+  nostroke();
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      
+    }
+  }
 
+}
+
+
+//I AM MAKING A WORDLE GAME IN P5JS AND I WANT TO CHECK IF THE USER IS WRITING A LEGITIMATE WORD HOW CAN i DO THAT AND I want to check every 5 letter word possible
