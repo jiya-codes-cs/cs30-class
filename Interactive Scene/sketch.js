@@ -30,7 +30,7 @@ function windowResized() {
 }
 
 function setup() {
-  createCanvas(windowHeight, windowHeight);
+  createCanvas(windowWidth, windowHeight);
   noLoop();
   
   button = createButton("Click to Start");
@@ -42,6 +42,7 @@ function setup() {
   button.mousePressed(() => {
     screen = 1;
     button.hide(); // hide button when switching screens
+    startGame(); // starts the game when button is pressed
     loop(); 
   });
   
@@ -74,10 +75,10 @@ function makeSquares(){
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
   // center horizontally
-  let startX = (width - totalGridWidth) / 2;
+  startX = (width - totalGridWidth) / 2;
 
   // align near top
-  let startY = height * 0.1; // 10% from top is needed for spacing
+  startY = height * 0.1; // 10% from top is needed for spacing
   noFill();
   stroke ("grey");
   strokeWeight(3);
@@ -96,14 +97,50 @@ function drawLetters() {
   textAlign(CENTER,CENTER);
   textSize(sizeOfSquare * 0.6);
   fill(0);
-  nostroke();
+  noStroke();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
-      
+      let letter = guesses [r][c];
+      if (letter !== "") {
+        let x = startX + c * (sizeOfSquare + gap) + sizeOfSquare / 2;
+        let y = startY + r * (sizeOfSquare + gap) + sizeOfSquare / 2;
+        text(letter, x, y);
+      }
     }
   }
-
 }
+
+// handles typing
+function keyPressed(){
+  if (screen !== 1) return; //only active when game screen is there
+
+  if (keyCode === BACKSPACE) {
+    if (currentColumn > 0) {
+      currentColumn --;
+      guesses [currentRow] [currentColumn] = "";
+    } 
+    else if (keyCode === ENTER) {
+      if (currentColumn === columns) {
+        currentRow ++;
+        currentColumn = 0;
+      }
+    } 
+  }
+}
+
+function keyTyped() {
+  if (screen !== 1) return;
+      // only accepts letters
+  let letter = key.toUpperCase();
+    if (letter.length === 1 && letter >= "A" && letter <= "Z") {
+      if (currentColumn < columns) {
+        guesses [currentRow] [currentColumn] = letter;
+        currentColumn ++;
+      }
+    }
+}
+
+
 
 
 //I AM MAKING A WORDLE GAME IN P5JS AND I WANT TO CHECK IF THE USER IS WRITING A LEGITIMATE WORD HOW CAN i DO THAT AND I want to check every 5 letter word possible
