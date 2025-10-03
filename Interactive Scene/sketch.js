@@ -6,32 +6,19 @@
 // - describe what you did to take this project "above and beyond"
 
 
-let screen = 0; // 0 = button screen, 1 = ball screen
+let screen = 0; // 0 = button screen, 1 = wordle screen
 let button;
 
-// ball variables
-let myFont;
-
-function preload() {
-  myFont = loadFont('PressStart2P-Regular.ttf');
-}
 
 function windowResized() {
-  if (windowWidth > windowHeight) {
-    createCanvas(windowHeight, windowHeight);
+  resizeCanvas(windowWidth, windowHeight);
+  if (screen === 0) {
+    button.position(width/ 2 - 100, height/ 2 -30);
   } 
-  else {
-    createCanvas(windowWidth, windowWidth);
-  }
 }
 
 function setup() {
-  if (windowWidth > windowHeight) {
-    createCanvas(windowHeight, windowHeight);
-  } 
-  else {
-    createCanvas(windowWidth, windowWidth);
-  }
+  createCanvas(windowHeight, windowHeight);
   noLoop();
   
   button = createButton("Click to Start");
@@ -43,6 +30,7 @@ function setup() {
   button.mousePressed(() => {
     screen = 1;
     button.hide(); // hide button when switching screens
+    loop(); 
   });
   
 }
@@ -51,9 +39,11 @@ function draw() {
   background("lightblue");
 
   if (screen === 0) {
+    background("lightblue");
     // nothing else needed — button is already there
   } 
-  else if (screen === 1) {
+  else {
+    background("white");
     makeSquares();
   }
 }
@@ -61,23 +51,29 @@ function draw() {
 function makeSquares(){
   let columns = 6;
   let rows = 5;
-  sizeOfSquare = width/10;
-  let totalGridWidth = columns * sizeOfSquare;
-  let totalGridHeight = rows * sizeOfSquare;
+  sizeOfSquare = width / 12; // slightly smaller so spacing fits
+  let gap = sizeOfSquare * 0.2; // 20% of the box size is spacing
+  let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
+  let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
-  // Setting the position to center horizontally
+  // center horizontally
   let startX = (width - totalGridWidth) / 2;
 
-  // Aligning the code to the top of the page (also left some margin for neatness)
-  let startY = height * 0.1;
+  // align near top
+  let startY = height * 0.1; // 10% from top is needed for spacing
+  
+
+  
   noFill();
   stroke ("grey");
   strokeWeight(3);
 
-  for (let a = 0; a < rows; a++) {
-    for (let b = 0; b < columns; b ++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c ++) {
+      let x = startX + c * (sizeOfSquare + gap);
+      let y = startY + r * (sizeOfSquare + gap);
       //makes a screen with boxes
-      rect( startX + b * sizeOfSquare, startY  + a * sizeOfSquare, sizeOfSquare, sizeOfSquare);
+      rect( x, y, sizeOfSquare, sizeOfSquare);
     }
   }
 }
