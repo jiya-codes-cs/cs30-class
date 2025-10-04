@@ -36,6 +36,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   noLoop();
 
+  
+  // calculates the square size and gap after canvas is created
+  sizeOfSquare = min(width, height) / 20; 
+  gap = sizeOfSquare * 0.15;
+
+  // created a button and formatted it
   button = createButton("Click to Start");
   button.style('font-size', '20px');
   button.style('background-color', "beige");
@@ -56,6 +62,7 @@ function draw() {
     background("white");
     makeSquares();
     drawLetters();
+    drawKeyboard();
   }
 }
 
@@ -67,8 +74,7 @@ function startGame() {
   console.log("Word to guess:", chosenWord);
 }
 
-sizeOfSquare = min(width, height) / 20; 
-gap = sizeOfSquare * 0.15;
+
 function makeSquares() {
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
