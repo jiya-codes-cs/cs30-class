@@ -8,6 +8,7 @@
 
 let screen = 0; // 0 = button screen, 1 = wordle screen
 let button;
+
 let columns = 6;
 let rows = 5;
 let sizeOfSquare;
@@ -22,19 +23,11 @@ let currentRow = 0;
 let currentColumn = 0;
 let guesses = []; // stores letters
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  if (screen === 0) {
-    button.position(width/ 2 - 100, height/ 2 -30);
-  } 
-}
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noLoop();
   
   button = createButton("Click to Start");
-  button.style('font-family', 'myFont' );
   button.style('font-size', '20px' );
   button.style('background-color', "beige");
   button.size(200, 60);
@@ -49,12 +42,12 @@ function setup() {
 }
 
 function draw() {
-  background("white");
-
   if (screen === 0) {
+    background("lightblue");
     // nothing else needed (button is already there)
   } 
   else {
+    background("white");
     makeSquares();
     drawLetters();
   }
@@ -65,20 +58,19 @@ function startGame(){
   chosenWord = random(words);
   currentRow = 0;
   currentColumn = 0;
-  guesses = Array(rows). fill(null).map(() => Array(columns).fill(""));
+  guesses = Array(rows). fill().map(() => Array(columns).fill(""));
   console.log("Word to guess:", chosenWord); // for testing
 }
 function makeSquares(){
   sizeOfSquare = width / 12; // slightly smaller so spacing fits
-  let gap = sizeOfSquare * 0.2; // 20% of the box size is spacing
+  gap = sizeOfSquare * 0.2; // 20% of the box size is spacing
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
-  let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
   // center horizontally
   startX = (width - totalGridWidth) / 2;
-
   // align near top
   startY = height * 0.1; // 10% from top is needed for spacing
+
   noFill();
   stroke ("grey");
   strokeWeight(3);
@@ -100,7 +92,7 @@ function drawLetters() {
   noStroke();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
-      let letter = guesses [r][c];
+      let letter = guesses[r][c];
       if (letter !== "") {
         let x = startX + c * (sizeOfSquare + gap) + sizeOfSquare / 2;
         let y = startY + r * (sizeOfSquare + gap) + sizeOfSquare / 2;
@@ -140,6 +132,13 @@ function keyTyped() {
   }
 }
 
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  if (screen === 0) {
+    button.position(width/ 2 - 100, height/ 2 -30);
+  } 
+}
 
 
 
