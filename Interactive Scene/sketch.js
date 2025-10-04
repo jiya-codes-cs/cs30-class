@@ -13,6 +13,16 @@ let sizeOfSquare;
 let gap;
 let startX;
 let startY;
+let validWordList = [];
+
+function preload() {
+// loads the file as a string
+  validWordList = loadStrings("valid-wordle-words.txt", () => {
+// fixes the lowercase letters in the txt file as well as spacing issues
+    validWordList = validWordList.map(word => word.trim().toUpperCase());
+    console.log("Words loaded:", validWordList.length);
+  });
+}
 
 let words = ["APPLE", "QUERY", "DATES", "TROVE", "QUILL", "SMITE", "SLEEK", "HUMOR", "FOUND", "SWIFT",
              "JOLLY", "TRITE", "ALOFT", "FUDGE", "YATCH", "GLYPH", "DROLL", "HATER", "SWILL", "JAZZY"]; 
@@ -127,6 +137,11 @@ function drawLetters() {
   }
 }
 
+function isRealWord(word) {
+  //make everything uppercase to match your guesses
+  return validWordList.includes(word.toUpperCase());
+}
+
 // typing letters
 function keyPressed() {
   if (screen !== 1) return;
@@ -136,8 +151,15 @@ function keyPressed() {
       currentColumn--;
       guesses[currentRow][currentColumn] = "";
     }
-  } else if (keyCode === ENTER) {
+  } 
+  else if (keyCode === ENTER) {
     if (currentColumn === columns) {
+      let attempt = guesses [currentRow].join("");
+
+      if (!isRealWord(attempt)) {
+        alert(attempt + " is not a valid word!"); // gives an alert message onscreen
+        return; // stops you from moving to the next row
+      }
       currentRow++;
       currentColumn = 0;
     }
