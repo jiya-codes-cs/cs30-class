@@ -2,7 +2,11 @@
 // Jiya Khalsa Bangar //
 // 29th September, 2025 
 // Extra for Experts: 
-// - describe what you did to take this project "above and beyond"
+// - Imported a valid Wordle words file from a GitHub repo
+// - Attached the TXT file to the project
+// - Used p5.js preload() to load the file before the game starts
+// - Preprocessed the words to uppercase and trimmed spacing
+// - Used this list to check if a word is real when pressing ENTER
 
 let screen = 0; // 0 = button screen, 1 = wordle screen
 let button;
@@ -13,7 +17,9 @@ let sizeOfSquare;
 let gap;
 let startX;
 let startY;
-let validWordList = [];
+let validWordList = []; // stores valid words from TXT file
+let keyWidth, keyHeight;
+let keyGap = 5;
 
 function preload() {
 // loads the file as a string
@@ -30,7 +36,7 @@ let words = ["APPLE", "QUERY", "DATES", "TROVE", "QUILL", "SMITE", "SLEEK", "HUM
 let chosenWord = "";
 let currentRow = 0;
 let currentColumn = 0;
-let guesses = []; // stores letters
+let guesses = []; // stores letters for each row
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -38,8 +44,8 @@ function setup() {
 
   
   // calculates the square size and gap after canvas is created
-  sizeOfSquare = min(width, height) / 20; 
-  gap = sizeOfSquare * 0.15;
+  sizeOfSquare = min(width, height) / 20; // square size for grid
+  gap = sizeOfSquare * 0.15; // gap between squares
 
   // created a button and formatted it
   button = createButton("Click to Start");
@@ -56,13 +62,25 @@ function setup() {
 }
 
 function draw() {
+  background("white"); // white background for everything
+
   if (screen === 0) {
-    background("lightblue");
-  } else {
-    background("white");
-    makeSquares();
-    drawLetters();
-    drawKeyboard();
+    // START SCREEN
+    push();
+    textAlign(CENTER, CENTER);
+
+    // Title
+    textFont('Poppins');
+    textSize(60);
+    fill(50);
+    text("WORDLE GAME", width / 2, height * 0.35); // slightly above center
+
+    // Button is already positioned in setup(), just visible here
+  } else if (screen === 1) {
+    // GAME SCREEN
+    makeSquares(); // draw empty grid
+    drawLetters(); // fill in letters + colors
+    drawKeyboard(); // draw onscreen keyboard
   }
 }
 
@@ -70,7 +88,7 @@ function startGame() {
   chosenWord = random(words);
   currentRow = 0;
   currentColumn = 0;
-  guesses = Array(rows).fill(null).map(() => Array(columns).fill(""));
+  guesses = Array(rows).fill(null).map(() => Array(columns).fill("")); // reset guesses
   console.log("Word to guess:", chosenWord);
 }
 
@@ -200,18 +218,15 @@ let keyboardRows = [
   ["ENTER","Z","X","C","V","B","N","M","BACK"]
 ];
 
-let keyWidth, keyHeight;
-let keyGap = 5;
+
 
 function drawKeyboard() {
-  // make keys relative to grid size
-  keyWidth = sizeOfSquare * 0.8;   // slightly smaller than a grid square
-  keyHeight = keyWidth * 1.1;      // slightly taller
+  keyWidth = sizeOfSquare * 0.8;   
+  keyHeight = keyWidth * 1.1;      
 
-  let kbStartY = startY + rows * (sizeOfSquare + gap) + 20; // 20 px below grid
+  let kbStartY = startY + rows * (sizeOfSquare + gap) + 20;
 
   textAlign(CENTER, CENTER);
-  textSize(keyHeight * 0.5); // proportional to key
 
   for (let r = 0; r < keyboardRows.length; r++) {
     let row = keyboardRows[r];
@@ -227,9 +242,17 @@ function drawKeyboard() {
       strokeWeight(2);
       rect(x, y, keyWidth, keyHeight, 5);
 
+      // dynamically scale text to fit key width
+      let txt = row[c];
+      let maxTextWidth = keyWidth * 0.8; // leaves some padding
+      textSize(keyHeight * 0.5); // starts with default size
+      while (textWidth(txt) > maxTextWidth) {
+        textSize(textSize() - 1);
+      }
+
       fill(0);
       noStroke();
-      text(row[c], x + keyWidth / 2, y + keyHeight / 2);
+      text(txt, x + keyWidth / 2, y + keyHeight / 2);
     }
   }
 }
