@@ -68,8 +68,8 @@ function startGame() {
 }
 
 function makeSquares() {
-  sizeOfSquare = 15;
-  gap = 3;
+  sizeOfSquare = 20;
+  gap = 5;
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
