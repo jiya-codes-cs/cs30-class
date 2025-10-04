@@ -67,9 +67,9 @@ function startGame() {
   console.log("Word to guess:", chosenWord);
 }
 
+sizeOfSquare = 30;
+gap = 5;
 function makeSquares() {
-  sizeOfSquare = 22;
-  gap = 4;
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
@@ -77,7 +77,7 @@ function makeSquares() {
   startX = (width - totalGridWidth) / 2;
 
   // keeps it above halfway
-  startY = height * 0.18; // takes 15% from the top
+  startY = height * 0.15; // takes 15% from the top
 
   noFill();
   stroke("grey");
@@ -109,7 +109,7 @@ function drawLetters() {
       // first pass: green
       for (let c = 0; c < columns; c++) {
         if (guessLetters[c] === wordLetters[c]) {
-          rowColors[c] = color(0, 255, 0); // green
+          rowColors[c] = color(83, 141, 78); // green
           wordLetters[c] = null; // remove from consideration
           guessLetters[c] = null; 
         }
@@ -118,10 +118,10 @@ function drawLetters() {
       // second pass: yellow
       for (let c = 0; c < columns; c++) {
         if (guessLetters[c] && wordLetters.includes(guessLetters[c])) {
-          rowColors[c] = color(255, 255, 0); // yellow
+          rowColors[c] = color(181, 159, 59); // yellow
           wordLetters[wordLetters.indexOf(guessLetters[c])] = null; // remove first occurrence
         } else if (guessLetters[c] && rowColors[c] !== color(0, 255, 0)) {
-          rowColors[c] = color(200); // grey
+          rowColors[c] = color(58, 58, 60); // grey
         }
       }
     }
