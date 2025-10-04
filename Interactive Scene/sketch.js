@@ -68,16 +68,16 @@ function startGame() {
 }
 
 function makeSquares() {
-  sizeOfSquare = 30;
-  gap = 5;
+  sizeOfSquare = 15;
+  gap = 3;
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
   // center horizontally
   startX = (width - totalGridWidth) / 2;
 
-  // place vertically so that the grid is in the upper middle part of the laptop screen
-  startY = (height / 2) - totalGridHeight / 2 - 10;
+  // keeps it above halfway
+  startY = height * 0.15; // takes 15% from the top
 
   noFill();
   stroke("grey");
