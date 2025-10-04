@@ -204,19 +204,17 @@ let keyWidth, keyHeight;
 let keyGap = 5;
 
 function drawKeyboard() {
-  // size of keys based on screen width
-  keyWidth = min(50, width / 12); // max 50 px, adjust to screen
-  keyHeight = keyWidth * 1.2; 
-  let kbStartY = startY + rows * (sizeOfSquare + gap) + 50; // 50 px below grid
+  // make keys relative to grid size
+  keyWidth = sizeOfSquare * 0.8;   // slightly smaller than a grid square
+  keyHeight = keyWidth * 1.1;      // slightly taller
+
+  let kbStartY = startY + rows * (sizeOfSquare + gap) + 20; // 20 px below grid
+
   textAlign(CENTER, CENTER);
-  textSize(keyHeight * 0.5);
-  stroke(0);
-  strokeWeight(2);
-  fill(200);
+  textSize(keyHeight * 0.5); // proportional to key
 
   for (let r = 0; r < keyboardRows.length; r++) {
     let row = keyboardRows[r];
-    // center row horizontally
     let rowWidth = row.length * (keyWidth + keyGap) - keyGap;
     let rowStartX = (width - rowWidth) / 2;
 
@@ -224,11 +222,11 @@ function drawKeyboard() {
       let x = rowStartX + c * (keyWidth + keyGap);
       let y = kbStartY + r * (keyHeight + keyGap);
 
-      // draw key rectangle
       fill(220);
+      stroke(0);
+      strokeWeight(2);
       rect(x, y, keyWidth, keyHeight, 5);
 
-      // draw letter
       fill(0);
       noStroke();
       text(row[c], x + keyWidth / 2, y + keyHeight / 2);
@@ -236,10 +234,12 @@ function drawKeyboard() {
   }
 }
 
+
 function mousePressed() {
   if (screen !== 1) return;
 
-  let kbStartY = startY + rows * (sizeOfSquare + gap) + 50;
+  // keyboard starts right below the grid
+  let kbStartY = startY + rows * (sizeOfSquare + gap) + 20;
 
   for (let r = 0; r < keyboardRows.length; r++) {
     let row = keyboardRows[r];
@@ -249,8 +249,11 @@ function mousePressed() {
 
     for (let c = 0; c < row.length; c++) {
       let x = rowStartX + c * (keyWidth + keyGap);
+
+      // check if mouse is inside this key
       if (mouseX >= x && mouseX <= x + keyWidth && mouseY >= y && mouseY <= y + keyHeight) {
         let key = row[c];
+
         if (key === "BACK") {
           if (currentColumn > 0) {
             currentColumn--;
@@ -276,4 +279,3 @@ function mousePressed() {
     }
   }
 }
-
