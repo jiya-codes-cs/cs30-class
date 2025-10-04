@@ -77,7 +77,7 @@ function makeSquares() {
   startX = (width - totalGridWidth) / 2;
 
   // place vertically so that the grid is in the upper middle part of the laptop screen
-  startY = (height / 2) - totalGridHeight / 2 - 20;
+  startY = (height / 2) - totalGridHeight / 2 - 10;
 
   noFill();
   stroke("grey");
