@@ -71,9 +71,13 @@ function makeSquares() {
   sizeOfSquare = width / 12;
   gap = sizeOfSquare * 0.2;
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
+  let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
+  // center horizontally
   startX = (width - totalGridWidth) / 2;
-  startY = height * 0.1;
+
+  // place vertically so that the grid is in the upper middle part of the laptop screen
+  startY = (height / 2) - totalGridHeight / 2 - 50;
 
   noFill();
   stroke("grey");
