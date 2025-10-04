@@ -186,3 +186,88 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   if (screen === 0) button.position(width/2 - 100, height/2 - 30);
 }
+
+// Keyboard layout like Wordle
+let keyboardRows = [
+  ["Q","W","E","R","T","Y","U","I","O","P"],
+  ["A","S","D","F","G","H","J","K","L"],
+  ["ENTER","Z","X","C","V","B","N","M","BACK"]
+];
+
+let keyWidth, keyHeight;
+let keyGap = 5;
+
+function drawKeyboard() {
+  // size of keys based on screen width
+  keyWidth = min(50, width / 12); // max 50 px, adjust to screen
+  keyHeight = keyWidth * 1.2; 
+  let kbStartY = startY + rows * (sizeOfSquare + gap) + 50; // 50 px below grid
+  textAlign(CENTER, CENTER);
+  textSize(keyHeight * 0.5);
+  stroke(0);
+  strokeWeight(2);
+  fill(200);
+
+  for (let r = 0; r < keyboardRows.length; r++) {
+    let row = keyboardRows[r];
+    // center row horizontally
+    let rowWidth = row.length * (keyWidth + keyGap) - keyGap;
+    let rowStartX = (width - rowWidth) / 2;
+
+    for (let c = 0; c < row.length; c++) {
+      let x = rowStartX + c * (keyWidth + keyGap);
+      let y = kbStartY + r * (keyHeight + keyGap);
+
+      // draw key rectangle
+      fill(220);
+      rect(x, y, keyWidth, keyHeight, 5);
+
+      // draw letter
+      fill(0);
+      noStroke();
+      text(row[c], x + keyWidth / 2, y + keyHeight / 2);
+    }
+  }
+}
+
+function mousePressed() {
+  if (screen !== 1) return;
+
+  let kbStartY = startY + rows * (sizeOfSquare + gap) + 50;
+
+  for (let r = 0; r < keyboardRows.length; r++) {
+    let row = keyboardRows[r];
+    let rowWidth = row.length * (keyWidth + keyGap) - keyGap;
+    let rowStartX = (width - rowWidth) / 2;
+    let y = kbStartY + r * (keyHeight + keyGap);
+
+    for (let c = 0; c < row.length; c++) {
+      let x = rowStartX + c * (keyWidth + keyGap);
+      if (mouseX >= x && mouseX <= x + keyWidth && mouseY >= y && mouseY <= y + keyHeight) {
+        let key = row[c];
+        if (key === "BACK") {
+          if (currentColumn > 0) {
+            currentColumn--;
+            guesses[currentRow][currentColumn] = "";
+          }
+        } else if (key === "ENTER") {
+          if (currentColumn === columns) {
+            let attempt = guesses[currentRow].join("");
+            if (!isRealWord(attempt)) {
+              alert(attempt + " is not a valid word!");
+              return;
+            }
+            currentRow++;
+            currentColumn = 0;
+          }
+        } else {
+          if (currentColumn < columns) {
+            guesses[currentRow][currentColumn] = key;
+            currentColumn++;
+          }
+        }
+      }
+    }
+  }
+}
+
