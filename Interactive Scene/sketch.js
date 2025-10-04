@@ -43,7 +43,7 @@ function setup() {
     screen = 1;
     button.hide(); // hide button when switching screens
     startGame(); // starts the game when button is pressed
-    loop(); 
+    loop();
   });
   
 }
@@ -65,7 +65,7 @@ function startGame(){
   chosenWord = random(words);
   currentRow = 0;
   currentColumn = 0;
-  guesses = Array(rows). fill().map(() => Array(columns).fill(''));
+  guesses = Array(rows). fill(null).map(() => Array(columns).fill(""));
   console.log("Word to guess:", chosenWord); // for testing
 }
 function makeSquares(){
@@ -119,12 +119,12 @@ function keyPressed(){
       currentColumn --;
       guesses [currentRow] [currentColumn] = "";
     } 
-    else if (keyCode === ENTER) {
-      if (currentColumn === columns) {
-        currentRow ++;
-        currentColumn = 0;
-      }
-    } 
+  else if (keyCode === ENTER) {
+    if (currentColumn === columns) {
+      currentRow ++;
+      currentColumn = 0;
+    }
+  } 
   }
 }
 
@@ -132,12 +132,12 @@ function keyTyped() {
   if (screen !== 1) return;
       // only accepts letters
   let letter = key.toUpperCase();
-    if (letter.length === 1 && letter >= "A" && letter <= "Z") {
-      if (currentColumn < columns) {
-        guesses [currentRow] [currentColumn] = letter;
-        currentColumn ++;
-      }
+  if (letter.length === 1 && letter >= "A" && letter <= "Z") {
+    if (currentColumn < columns) {
+      guesses [currentRow] [currentColumn] = letter;
+      currentColumn ++;
     }
+  }
 }
 
 
