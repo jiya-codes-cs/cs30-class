@@ -9,8 +9,8 @@
 let screen = 0; // 0 = button screen, 1 = wordle screen
 let button;
 
-let columns = 6;
-let rows = 5;
+let columns = 5;
+let rows = 6;
 let sizeOfSquare;
 let gap;
 let startX;
@@ -58,7 +58,7 @@ function startGame(){
   chosenWord = random(words);
   currentRow = 0;
   currentColumn = 0;
-  guesses = Array(rows). fill().map(() => Array(columns).fill(""));
+  guesses = Array(rows). fill(null).map(() => Array(columns).fill(""));
   console.log("Word to guess:", chosenWord); // for testing
 }
 function makeSquares(){
@@ -86,17 +86,48 @@ function makeSquares(){
 }
 
 function drawLetters() {
-  textAlign(CENTER,CENTER);
+  textAlign(CENTER, CENTER);
   textSize(sizeOfSquare * 0.6);
-  fill(0);
   noStroke();
+
   for (let r = 0; r < rows; r++) {
+    // compute colors for row only if row has been submitted (full)
+    let rowColors = Array(columns).fill(color(255)); // default white
+    if (r < currentRow) {
+      // make a copy of chosenWord letters to handle duplicates
+      let wordLetters = chosenWord.split("");
+      let guessLetters = guesses[r].slice();
+
+      // first pass: green
+      for (let c = 0; c < columns; c++) {
+        if (guessLetters[c] === wordLetters[c]) {
+          rowColors[c] = color(0, 255, 0); // green
+          wordLetters[c] = null; // remove from consideration
+          guessLetters[c] = null; 
+        }
+      }
+
+      // second pass: yellow
+      for (let c = 0; c < columns; c++) {
+        if (guessLetters[c] && wordLetters.includes(guessLetters[c])) {
+          rowColors[c] = color(255, 255, 0); // yellow
+          wordLetters[wordLetters.indexOf(guessLetters[c])] = null; // remove first occurrence
+        } else if (guessLetters[c] && rowColors[c] !== color(0, 255, 0)) {
+          rowColors[c] = color(200); // grey
+        }
+      }
+    }
+
+    // draw boxes + letters
     for (let c = 0; c < columns; c++) {
-      let letter = guesses[r][c];
-      if (letter !== "") {
-        let x = startX + c * (sizeOfSquare + gap) + sizeOfSquare / 2;
-        let y = startY + r * (sizeOfSquare + gap) + sizeOfSquare / 2;
-        text(letter, x, y);
+      let x = startX + c * (sizeOfSquare + gap);
+      let y = startY + r * (sizeOfSquare + gap);
+      fill(rowColors[c]);
+      rect(x, y, sizeOfSquare, sizeOfSquare);
+
+      if (guesses[r][c] !== "") {
+        fill(0);
+        text(guesses[r][c], x + sizeOfSquare/2, y + sizeOfSquare/2);
       }
     }
   }
@@ -135,9 +166,7 @@ function keyTyped() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  if (screen === 0) {
-    button.position(width/ 2 - 100, height/ 2 -30);
-  } 
+  if (screen === 0) button.position(width/ 2 - 100, height/ 2 -30);
 }
 
 
