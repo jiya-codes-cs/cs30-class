@@ -67,8 +67,8 @@ function startGame() {
   console.log("Word to guess:", chosenWord);
 }
 
-sizeOfSquare = 50;
-gap = 7;
+sizeOfSquare = 45;
+gap = 6;
 function makeSquares() {
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
