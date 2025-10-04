@@ -68,8 +68,8 @@ function startGame() {
 }
 
 function makeSquares() {
-  sizeOfSquare = 20;
-  gap = 5;
+  sizeOfSquare = 22;
+  gap = 4;
   let totalGridWidth = columns * (sizeOfSquare + gap) - gap;
   let totalGridHeight = rows * (sizeOfSquare + gap) - gap;
 
@@ -77,7 +77,7 @@ function makeSquares() {
   startX = (width - totalGridWidth) / 2;
 
   // keeps it above halfway
-  startY = height * 0.15; // takes 15% from the top
+  startY = height * 0.18; // takes 15% from the top
 
   noFill();
   stroke("grey");
