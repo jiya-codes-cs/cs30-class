@@ -24,14 +24,13 @@ let keyGap = 5;
 function preload() {
 // loads the file as a string
   validWordList = loadStrings("valid-wordle-words.txt", () => {
-// fixes the lowercase letters in the txt file as well as spacing issues
+  // fixes the lowercase letters in the txt file as well as spacing issues
     validWordList = validWordList.map(word => word.trim().toUpperCase());
     console.log("Words loaded:", validWordList.length);
   });
 }
 
-let words = ["APPLE", "QUERY", "DATES", "TROVE", "QUILL", "SMITE", "SLEEK", "HUMOR", "FOUND", "SWIFT",
-             "JOLLY", "TRITE", "ALOFT", "FUDGE", "YATCH", "GLYPH", "DROLL", "HATER", "SWILL", "JAZZY"]; 
+let words = ["APPLE", "QUERY", "DATES", "TROVE", "QUILL", "SMITE", "SLEEK", "HUMOR", "FOUND", "SWIFT","JOLLY", "TRITE", "ALOFT", "FUDGE", "YATCH", "GLYPH", "DROLL", "HATER", "SWILL", "JAZZY"]; 
 
 let chosenWord = "";
 let currentRow = 0;
@@ -144,7 +143,8 @@ function drawLetters() {
         if (guessLetters[c] && wordLetters.includes(guessLetters[c])) {
           rowColors[c] = color(181, 159, 59); // yellow
           wordLetters[wordLetters.indexOf(guessLetters[c])] = null; // remove first occurrence
-        } else if (guessLetters[c] && rowColors[c] !== color(0, 255, 0)) {
+        } 
+        else if (guessLetters[c] && rowColors[c] !== color(0, 255, 0)) {
           rowColors[c] = color(58, 58, 60); // grey
         }
       }
