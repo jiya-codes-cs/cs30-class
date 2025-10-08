@@ -75,7 +75,8 @@ function draw() {
     text("WORDLE GAME", width / 2, height * 0.35); // slightly above center
 
     // Button is already positioned in setup(), just visible here
-  } else if (screen === 1) {
+  } 
+  else if (screen === 1) {
     // GAME SCREEN
     makeSquares(); // draw empty grid
     drawLetters(); // fill in letters + colors
@@ -173,7 +174,6 @@ function isRealWord(word) {
 // typing letters
 function keyPressed() {
   if (screen !== 1) return;
-
   if (keyCode === BACKSPACE) {
     if (currentColumn > 0) {
       currentColumn--;
