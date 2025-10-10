@@ -173,7 +173,9 @@ function isRealWord(word) {
 
 // typing letters
 function keyPressed() {
-  if (screen !== 1) return;
+  if (screen !== 1) {
+    return;
+  }
   if (keyCode === BACKSPACE) {
     if (currentColumn > 0) {
       currentColumn--;
@@ -195,7 +197,9 @@ function keyPressed() {
 }
 
 function keyTyped() {
-  if (screen !== 1) return;
+  if (screen !== 1) {
+    return;
+  }
 
   let letter = key.toUpperCase();
   if (letter.length === 1 && letter >= "A" && letter <= "Z") {
@@ -208,7 +212,9 @@ function keyTyped() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  if (screen === 0) button.position(width/2 - 100, height/2 - 30);
+  if (screen === 0) {
+    button.position(width/2 - 100, height/2 - 30);
+  }
 }
 
 // Keyboard layout like Wordle
@@ -259,8 +265,9 @@ function drawKeyboard() {
 
 
 function mousePressed() {
-  if (screen !== 1) return;
-
+  if (screen !== 1) {
+    return;
+  }
   // keyboard starts right below the grid
   let kbStartY = startY + rows * (sizeOfSquare + gap) + 20;
 
@@ -282,7 +289,8 @@ function mousePressed() {
             currentColumn--;
             guesses[currentRow][currentColumn] = "";
           }
-        } else if (key === "ENTER") {
+        } 
+        else if (key === "ENTER") {
           if (currentColumn === columns) {
             let attempt = guesses[currentRow].join("");
             if (!isRealWord(attempt)) {
@@ -292,7 +300,8 @@ function mousePressed() {
             currentRow++;
             currentColumn = 0;
           }
-        } else {
+        } 
+        else {
           if (currentColumn < columns) {
             guesses[currentRow][currentColumn] = key;
             currentColumn++;
