@@ -3,7 +3,8 @@
 ## Demos
 - [Traffic Lights](traffic-lights)
 - [Bouncing Balls](bouncing-balls)
--[Generative Art](generative-art)
+- [Generative Art](generative-art)
+- [Perlin Noise](perlin-noise)
 
 ## Assignment
 - [Interactive Scene](Interactive Scene)
