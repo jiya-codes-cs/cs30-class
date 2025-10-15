@@ -37,6 +37,7 @@ function draw() {
   drawBoard();
 }
 
+// created random color candy's that will be displayed on the board
 function makeBoard() {
   for (let r = 0; r < rows; r++) {
     board[r] = [];
@@ -47,6 +48,7 @@ function makeBoard() {
   }
 }
 
+// created a function that makes the board on which the game will run
 function drawBoard() {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
