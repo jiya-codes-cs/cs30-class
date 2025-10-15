@@ -5,6 +5,15 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+// Things to add
+// - Board (done)
+// - Candies (done)
+// - Setting it to the middle of the screen
+// - Candy position
+// - Add a Timer
+// - Add a Start Screen
+// - Add messages
+
 let rows = 8;
 let columns = 8;
 let cellSize = 50;
@@ -21,6 +30,7 @@ class Candy {
 
   draw() {
     fill(this.type);
+    noStroke();
     circle(this.column * cellSize + cellSize/2, this.row * cellSize + cellSize/2, cellSize * 0.8);
   }
 }
@@ -57,3 +67,7 @@ function drawBoard() {
   }
 }
 
+// function candyLimit() {
+  
+
+// }
