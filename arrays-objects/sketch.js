@@ -3,7 +3,7 @@
 // 10 October, Friday, 2025
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - explored do...while loops
 
 // Things to add
 // - Board (done)
@@ -36,6 +36,7 @@ class Candy {
 }
 
 let board = []; // 2D array for the board
+let selectedCandy = null;
 
 function setup() {
   createCanvas(columns * cellSize, rows * cellSize);
@@ -52,9 +53,15 @@ function makeBoard() {
   for (let r = 0; r < rows; r++) {
     board[r] = [];
     for (let c = 0; c < columns; c++) {
+      let newColor;
+      do {
+        newColor = random(candyColors);
+      } while ((c>2 && board [r][c-1] === newColor && board [r][c-2].color === newColor) || (c>2 && board [r][c-1] === newColor && board [r][c-2].color === newColor)
+
       let randomType = random(candyTypes);
       board[r][c] = new Candy(randomType, r, c);
     }
+    
   }
 }
 
@@ -67,7 +74,4 @@ function drawBoard() {
   }
 }
 
-// function candyLimit() {
-  
 
-// }
