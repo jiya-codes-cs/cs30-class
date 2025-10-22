@@ -100,13 +100,15 @@ function mousePressed() {
         swapCandies(selectedCandy, board[r][c]);
         selectedCandy = null;
 
-      // only swap if it creates a match
-      if (!hasMatch()) swapCandies(selectedCandy, board[r][c]); {
-        selectedCandy = null;
+        // only swap if it creates a match
+        if (!hasMatch()) {
+          swapCandies(selectedCandy, board[r][c]);
+          selectedCandy = null;
+        }
+      } 
+      else {
+        selectedCandy = board[r][c]; // change selection (swap done)
       }
-    } 
-    else {
-      selectedCandy = board[r][c]; // change selection (swap done)
     }
   }
 }
@@ -137,22 +139,27 @@ function removeMatches() {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns - 2; c++) {
       let color = board[r][c].color;
-      if(!color) continue;
-      if (board[r][c + 1].color === color && board[r][c + 2].color === color) {
-        let k = c;
-        while(k < columns && board[r][k].color === color) {
-          matched.push([r],[k]);
-          k++;
+      if(!color)  {
+        if (board[r][c + 1].color === color && board[r][c + 2].color === color) {
+          let k = c;
+          while(k < columns && board[r][k].color === color) {
+            matched.push([r],[k]);
+            k++;
+          }
+          c = k - 1;
         }
-        c = k - 1;
+        continue;
       }
     }
   }
+  
   // vertical matches
   for (let c = 0; c < columns; c++) {
     for (let r = 0; r < rows - 2; r++) {
       let color = board[r][c].color;
-      if(!color) continue;
+      if(!color) {
+        continue;
+      }
       if (board[r + 1][c].color === color && board[r + 2][c].color === color) {
         let k = r;
         while(k < rows && board[r][k].color === color) {
@@ -164,7 +171,9 @@ function removeMatches() {
     }
   }
 
-  if (testOnly) return matched.length > 0; 
+  if (testOnly) {
+    return matched.length > 0;
+  }
 
   // removes canies by setting color to null
   for (let [r,c] of toRemove) {
