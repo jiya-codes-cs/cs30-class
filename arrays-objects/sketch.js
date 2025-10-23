@@ -4,6 +4,7 @@
 //
 // Extra for Experts:
 // - explored do...while loops
+// - used html and css as part of the sketch
 
 // Things to add
 // - Board (done)
@@ -12,6 +13,7 @@
 // - Candy position (in progress)
 // - Add a Timer
 // - Add a Start Screen
+// - Background
 // - Add messages
 
 let rows = 8;
@@ -199,3 +201,11 @@ function applyGravity() {
     }
   }
 }
+
+
+
+
+
+
+
+
