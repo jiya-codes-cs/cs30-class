@@ -16,12 +16,88 @@
 // - Background
 // - Add messages
 
-let rows = 8;
-let columns = 8;
+
+let rows = 9;
+let columns = 9;
 let cellSize = 50;
+let board = [];
+let score = 0;
+let candies = ["Blue", "Orange", "Green", "Yellow", "Red", "Purple"];
 
-let candyColors = ["red", "blue", "green", "yellow", "purple"];
+let currentTile;
+let otherTile;
 
+window.onload = function() {
+  startGame;
+
+  //takes 1/10 of a second
+  window.setInterval(function() {
+    crushCandy();
+    slideCandy();
+    generateCandy();
+  }, 100);
+};
+
+// function genrates random candies
+function randomCandy() {
+  return candies[Math.floor(Math.random * candies.length)];
+}
+
+function startGame() {
+  for (let r = 0; r < rows; r++){
+    let row = [];
+    for (let c = 0; r < columns; c++) {
+      let tile =document.createElement("img");
+      tile.id = r.toString() + "-" + c.toString();
+      tile.src = "./images/" + randomCandy() + ".png";
+
+      // implementing drag functionality
+      tile.addEventListner("dragstart", dragStart); // clicks on candy to initialize drag process
+      tile.addEventListner("dragover", dragOver); // clicks on candy and moves it to drag the candy
+      tile.addEventListner("dragenter", dragEnter); // dragging candy onto another candy
+      tile.addEventListner("dragleave", dragLeave); // leave candy over another candy
+      tile.addEventListner("dragdrop", dragDrop); // dropping a candy over another candy
+      tile.addEventListner("dragend", dragEnd); // sfter the dragging process is completed we drop the candy
+
+      document.getElementById("board").append(tile);
+      row.push(tile);
+    }
+    board.push(row);
+  }
+  console.log(board);
+}
+
+//fuction refers to the tile that was clicked before dragging
+function dragStart() {
+  currentTile = this;
+}
+
+function dragOver(e) {
+  e.preventDefault();
+}
+
+function dragEnter(e) {
+  e.preventDefault();
+}
+
+function dragLeave() {
+
+}
+
+// this function refers to the target tile that was dropped on 
+function dragDrop() {
+  otherTile = this;
+}
+
+function dragEnd() {
+  if (currentTile.src.includes("blank") || otherTile.src.includes("blank")) {
+    return;
+  }
+}
+
+
+
+// --------------------------------------------------------------------
 class Candy {
   constructor(color, row, column) {
     this.color = color;
@@ -39,7 +115,7 @@ class Candy {
   }
 }
 
-let board = [];
+// let board = [];
 let selectedCandy = null;
 
 function setup() {
