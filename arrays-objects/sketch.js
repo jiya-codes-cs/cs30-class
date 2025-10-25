@@ -9,12 +9,12 @@
 // Things to add
 // - Board (done)
 // - Candies (done)
-// - Setting it to the middle of the screen
-// - Candy position (in progress)
-// - Add a Timer
-// - Add a Start Screen
-// - Background
-// - Add messages
+// - Setting it to the middle of the screen (done)
+// - Candy position (done)
+// - Add a counter (done)
+// - Add a Start Screen (in progress)
+// - Background (done)
+// - Add messages (in progress)
 
 
 let rows = 9;
@@ -26,50 +26,76 @@ let candies = ["Blue", "Orange", "Green", "Yellow", "Red", "Purple"];
 
 let currentTile;
 let otherTile;
+let playerStarted = false;
+
+let moveCount = 0;
+let messages = ["Sweet!", "Delicious!", "Marvelous!", "Fantastic!", "Divine!", "Glorious!", "Lovely!"];
+let bombCandy = "Choco"; // this will be the bomb image
+let bombCount = 0;
+let maxBombs = 3; // maximum bombs allowed at one time
+let bombsPlaced = false; // track if we’ve already added starting bombs
 
 window.onload = function() {
-  startGame;
+  startGame();
 
   //takes 1/10 of a second
   window.setInterval(function() {
-    crushCandy();
-    slideCandy();
-    generateCandy();
-  }, 100);
-};
-
-// function genrates random candies
-function randomCandy() {
-  return candies[Math.floor(Math.random * candies.length)];
+    if (playerStarted) {
+      crushCandy();
+      slideCandy();
+      generateCandy();
+    }
+}, 100);
 }
 
-function startGame() {
-  for (let r = 0; r < rows; r++){
-    let row = [];
-    for (let c = 0; r < columns; c++) {
-      let tile =document.createElement("img");
-      tile.id = r.toString() + "-" + c.toString();
-      tile.src = "./images/" + randomCandy() + ".png";
+// function genrates random candies and some of them as bombs
+function randomCandy() {
+  return candies[Math.floor(Math.random() * candies.length)];
+}
 
-      // implementing drag functionality
-      tile.addEventListner("dragstart", dragStart); // clicks on candy to initialize drag process
-      tile.addEventListner("dragover", dragOver); // clicks on candy and moves it to drag the candy
-      tile.addEventListner("dragenter", dragEnter); // dragging candy onto another candy
-      tile.addEventListner("dragleave", dragLeave); // leave candy over another candy
-      tile.addEventListner("dragdrop", dragDrop); // dropping a candy over another candy
-      tile.addEventListner("dragend", dragEnd); // sfter the dragging process is completed we drop the candy
-
+  function startGame() {
+    for (let r = 0; r < rows; r++) {
+      let row = [];
+      for (let c = 0; c < columns; c++) {
+        
+        let tile = document.createElement("img");
+        tile.id = r.toString() + "-" + c.toString();
+        
+        // make sure the new candy doesn't form a match of 3
+        let candy = randomCandy();
+        
+        while (r >= 2 && board[r-1][c].src.includes(candy) && board[r-2][c].src.includes(candy)) {
+          candy = randomCandy();
+        }
+        while (c >= 2 && row[c-1].src.includes(candy) && row[c-2].src.includes(candy)) {
+          candy = randomCandy();
+        }
+        
+        tile.src = "./images/" + candy + ".png";
+        
+        // implementing drag functionality
+        tile.addEventListener("dragstart", dragStart); // clicks on candy to initialize drag process
+        tile.addEventListener("dragover", dragOver); // clicks on candy and moves it to drag the candy
+        tile.addEventListener("dragenter", dragEnter); // dragging candy onto another candy
+        tile.addEventListener("dragleave", dragLeave); // leave candy over another candy
+      tile.addEventListener("drop", dragDrop); // dropping a candy over another candy
+      tile.addEventListener("dragend", dragEnd); // sfter the dragging process is completed we drop the candy
+      
       document.getElementById("board").append(tile);
       row.push(tile);
     }
     board.push(row);
+    // at the end of startGame
+    bombsPlaced = true;
+    }
+    placeStartingBombs();
+    bombsPlaced = true;
   }
-  console.log(board);
-}
+
 
 //fuction refers to the tile that was clicked before dragging
 function dragStart() {
-  currentTile = this;
+  currentTile = this; 
 }
 
 function dragOver(e) {
@@ -90,198 +116,212 @@ function dragDrop() {
 }
 
 function dragEnd() {
-  if (currentTile.src.includes("blank") || otherTile.src.includes("blank")) {
-    return;
-  }
-}
-
-
-
-// --------------------------------------------------------------------
-class Candy {
-  constructor(color, row, column) {
-    this.color = color;
-    this.row = row;
-    this.column = column;
+  if (!currentTile || !otherTile) {
+    return; // stop if nothing was dragged
   }
 
-  draw() {
-    if (!this.color) {
-      fill(this.color);
-      stroke(0);
-      strokeWeight(2);
-      circle(this.column * cellSize + cellSize/2, this.row * cellSize + cellSize/2, cellSize * 0.8); 
+  // get coordinates of current tile
+  let currentCoords = currentTile.id.split("-");
+  let r = Number(currentCoords[0]);
+  let c = Number(currentCoords[1]);
+
+  // get coordinates of other tile
+  let otherCoords = otherTile.id.split("-");
+  let r2 = Number(otherCoords[0]);
+  let c2 = Number(otherCoords[1]);
+
+  // check adjacency
+  let moveLeft = c2 == c - 1 && r == r2;
+  let moveRight = c2 == c + 1 && r == r2;
+  let moveUp = r2 == r - 1 && c == c2;
+  let moveDown = r2 == r + 1 && c == c2;
+
+  let isAdjacent = moveLeft || moveRight || moveUp || moveDown;
+
+  if (isAdjacent) {
+    // swap the two candies
+    let temp = currentTile.src;
+    currentTile.src = otherTile.src;
+    otherTile.src = temp;
+
+    // check if swap makes a valid match
+    let validMove = checkValid();
+
+    if (validMove) {
+      playerStarted = true;
+      moveCount++;
+
+      // show message every 3 valid moves
+      if (moveCount % 3 == 0) {
+        let randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        showMessage(randomMessage);
+      }
+
+      // trigger bomb if any of the swapped tiles is a bomb
+      if (currentTile.src.includes("Choco")) {
+        triggerBomb(r, c);
+      }
+      if (otherTile.src.includes("Choco")) {
+        triggerBomb(r2, c2);
+      }
+
+    } else {
+      // if move is invalid, swap back
+      let temp2 = currentTile.src;
+      currentTile.src = otherTile.src;
+      otherTile.src = temp2;
     }
   }
 }
 
-// let board = [];
-let selectedCandy = null;
-
-function setup() {
-  createCanvas(columns * cellSize, rows * cellSize);
-  makeBoard();
+function crushCandy() {
+  crushThree();
+  document.getElementById("score").innerText = score;
 }
 
-function draw() {
-  background(220);
-  drawBoard();
+function crushThree() {
+    //check rows
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns-2; c++) {
+            let candy1 = board[r][c];
+            let candy2 = board[r][c+1];
+            let candy3 = board[r][c+2];
 
-  // continuously checks for matches and applies gravity
-  if (removeMatches()) {
-    applyGravity();
-  }
-}
+            if (candy1.src.includes("Choco") || candy2.src.includes("Choco") || candy3.src.includes("Choco")) {
+                explodeBomb(r, c);
+            }
 
+            if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+                candy1.src = "./images/blank.png";
+                candy2.src = "./images/blank.png";
+                candy3.src = "./images/blank.png";
+                score += 30;
+            }
+        }
+    }
 
-// created random color candy's that will be displayed on the board
-function makeBoard() {
-  for (let r = 0; r < rows; r++) {
-    board[r] = [];
+    //check columns
     for (let c = 0; c < columns; c++) {
-      let newColor;
-      do {
-        newColor = random(candyColors);
-      } while (c >= 2 && board[r][c-1].color === newColor && board[r][c-2].color === newColor ||
-               r >= 2 && board[r-1][c].color === newColor && board[r-2][c].color === newColor);
-      board[r][c] = new Candy(newColor, r, c);
+        for (let r = 0; r < rows-2; r++) {
+            let candy1 = board[r][c];
+            let candy2 = board[r+1][c];
+            let candy3 = board[r+2][c];
+
+            if (candy1.src.includes("Choco") || candy2.src.includes("Choco") || candy3.src.includes("Choco")) {
+                explodeBomb(r, c);
+            }
+
+            if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+                candy1.src = "./images/blank.png";
+                candy2.src = "./images/blank.png";
+                candy3.src = "./images/blank.png";
+                score += 30;
+            }
+        }
     }
-  }
 }
-// created a function that makes the board on which the game will run
-function drawBoard() {
-  for (let r = 0; r < rows; r++) {         
+
+function checkValid() {
+    //check rows
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns-2; c++) {
+            let candy1 = board[r][c];
+            let candy2 = board[r][c+1];
+            let candy3 = board[r][c+2];
+
+            if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+                return true;
+            }
+        }
+    }
+
+    //check columns
     for (let c = 0; c < columns; c++) {
-      board[r][c].draw();
-      // highlight selected candy
-      if (selectedCandy && selectedCandy.row === r && selectedCandy.column === c) {
-        strokeWeight(4);
-        stroke(255, 255, 0);
-        noFill();
-        rect(c * cellSize + 2, r * cellSize + 2, cellSize - 4, cellSize - 4);
-      }
-    }
-  }
-}
+        for (let r = 0; r < rows-2; r++) {
+            let candy1 = board[r][c];
+            let candy2 = board[r+1][c];
+            let candy3 = board[r+2][c];
 
-// created a function that selects candy when mouse is pressed
-function mousePressed() {
-  let c = floor(mouseX / cellSize);
-  let r = floor(mouseY / cellSize);
-  if (r >= 0 && r < rows && c >= 0 && c < columns) {
-    if (!selectedCandy) {
-      selectedCandy = board[r][c]; // select first candy
-    } 
-    else {
-      // try to swap if neighbor
-      if (isNeighbor(selectedCandy, board[r][c])) {
-        swapCandies(selectedCandy, board[r][c]);
-        selectedCandy = null;
-
-        // only swap if it creates a match
-        if (!hasMatch()) {
-          swapCandies(selectedCandy, board[r][c]);
-          selectedCandy = null;
+            if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+                return true;
+            }
         }
-      } 
-      else {
-        selectedCandy = board[r][c]; // change selection (swap done)
-      }
     }
-  }
+
+    return false;
 }
 
+function slideCandy() {
+    for (let c = 0; c < columns; c++) {
+        let ind = rows - 1;
 
-// this function checks if 2 candies are neighbors
-function isNeighbor(a, b) {
-  return abs(a.row - b.row) + abs(a.column - b.column) === 1;
-}
-
-// this funcion swaps 2 candies
-function swapCandies(c1, c2) {
-  let tempColor = a.color;
-  a.color = b.color;
-  b.color = tempColor;
-}
-
-// function checks if any matches exist
-function hasMatch() {
-  return removeMatches(true);
-}
-
-// remove matches (3 or more in a row or column)
-function removeMatches() {
-  let matched = [];
-
-  // horizontal matches
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < columns - 2; c++) {
-      let color = board[r][c].color;
-      if(!color)  {
-        if (board[r][c + 1].color === color && board[r][c + 2].color === color) {
-          let k = c;
-          while(k < columns && board[r][k].color === color) {
-            matched.push([r],[k]);
-            k++;
-          }
-          c = k - 1;
-        }
-        continue;
-      }
-    }
-  }
-  
-  // vertical matches
-  for (let c = 0; c < columns; c++) {
-    for (let r = 0; r < rows - 2; r++) {
-      let color = board[r][c].color;
-      if(!color) {
-        continue;
-      }
-      if (board[r + 1][c].color === color && board[r + 2][c].color === color) {
-        let k = r;
-        while(k < rows && board[r][k].color === color) {
-          matched.push([k],[c]);
-          k++;
-        }
-        r = k - 1;
-      }
-    }
-  }
-
-  if (testOnly) {
-    return matched.length > 0;
-  }
-
-  // removes canies by setting color to null
-  for (let [r,c] of toRemove) {
-    board[r][c].color = null;
-  }
-  return matched.length > 0;
-}
-
-// applies gravity and fills empty slots
-function applyGravity() {
-  for (let c = 0; c < columns; c++) {
-    for (let r = rows - 1; r >= 0; r--) {
-      if (board[r][c].color === null) {
-
-        // move candies above down
-        for (let k = r; k > 0; k--) {
-          board[k][c].color = board[k - 1][c].color;
+        for (let r = rows-1; r >= 0; r--) {
+            if (!board[r][c].src.includes("blank")) {
+                board[ind][c].src = board[r][c].src;
+                ind -= 1;
+            }
         }
 
-        // top candy gets new random color
-        board[0][c].color = random(candyColors);
+        for (let r = ind; r >= 0; r--) {
+            board[r][c].src = "./images/blank.png";
+        }
+    }
+}
+
+function generateCandy() {
+    for (let c = 0; c < columns;  c++) {
+        if (board[0][c].src.includes("blank")) {
+            // spawn a new bomb if ready
+            if (newBombReady) {
+                board[0][c].src = "./images/" + bombCandy + ".png";
+                newBombReady = false;
+            } else {
+                board[0][c].src = "./images/" + randomCandy() + ".png";
+            }
+        }
+    }
+}
+
+function showMessage(text) {
+  let message = document.getElementById("message");
+  message.innerText = text;
+  message.style.opacity = "1";
+  message.style.transform = "translate(-50%, -50%) scale(1.2)";
+
+  setTimeout(function() {
+    message.style.opacity = "0";
+    message.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 1000);
+}
+
+function explodeBomb(r, c) {
+  for (let i = r-1; i <= r+1; i++) {
+    for (let j = c-1; j <= c+1; j++) {
+      if (i >= 0 && i < rows && j >= 0 && j < columns) {
+        // if the crushed candy is a bomb, decrease count too
+        if (board[i][j].src.includes("Choco")) {
+          bombCount--;
+          if (bombCount < 0) bombCount = 0;
+        }
+
+        board[i][j].src = "./images/blank.png"; // crush candy
+        score += 10;
       }
     }
   }
+  showMessage("BOOM!");
 }
 
-
-
-
-
-
-
-
+function triggerBomb(r, c) {
+    // loop over entire board and crush all candies of a random color
+    let targetColor = candies[Math.floor(Math.random() * candies.length)];
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            if (board[i][j].src.includes(targetColor) || board[i][j].src.includes("Choco")) {
+                board[i][j].src = "./images/blank.png";
+                score += 10;
+            }
+        }
+    }
+    showMessage("LIGHTNING!"); // pop up message
+}
