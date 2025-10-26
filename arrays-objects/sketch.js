@@ -1,8 +1,6 @@
 // Candy Crush Saga
 // Jiya Khalsa Bangar
 // 10 October, Friday, 2025
-//
-// Extra for Experts:
 
 // Extra for Experts:
 // - Integrated HTML and CSS for UI
