@@ -3,18 +3,39 @@
 // 10 October, Friday, 2025
 //
 // Extra for Experts:
-// - used html and css as part of the sketch
+
+// Extra for Experts:
+// - Integrated HTML and CSS for UI
+// - Added object notation for player state (name, score, moves)
+// - Added start and end screens, animations, and bomb mechanics
 
 
 // Board Setup
 let rows = 9;
 let columns = 9;
-let cellSize = 50;
 let board = [];
-let score = 0;
 
 // Possible candy colors
 let candies = ["Blue", "Orange", "Green", "Yellow", "Red", "Purple"];
+
+// Player object using object notation
+let player = {
+  name: "Jiya",
+  score: 0,
+  moves: 0,
+  addScore(points) {
+    this.score += points;
+    document.getElementById("score").innerText = this.score;
+  },
+  addMove() {
+    this.moves++;
+  },
+  reset() {
+    this.score = 0;
+    this.moves = 0;
+  }
+};
+
 
 // Track selected tiles for drag and swap
 let currentTile;
@@ -101,7 +122,7 @@ function startGame() {
       document.getElementById("board").append(tile);
       row.push(tile);
     }
-  board.push(row);
+    board.push(row);
   }
   // after all rows are created
   placeStartingBombs();
@@ -174,39 +195,39 @@ function placeStartingBombs() {
   }
 
   // Step 3: Place 1 or 2 more bombs randomly, ensuring no 3 in a row
-let additionalBombs = Math.floor(Math.random() * 2) + 1; // 1 or 2
-for (let i = 0; i < additionalBombs; i++) {
-  let placed = false;
-  let attempts = 0;
-  while (!placed && attempts < 100) { // limit attempts to avoid infinite loop
-    let r = Math.floor(Math.random() * rows);
-    let c = Math.floor(Math.random() * columns);
-    if (!board[r][c].src.includes(bombCandy)) {
-      // Check if placing here would form 3 in a row horizontally
-      let canPlace = true;
-      if (c >= 2 && board[r][c - 1].src.includes(bombCandy) && board[r][c - 2].src.includes(bombCandy)) {
-        canPlace = false;
+  let additionalBombs = Math.floor(Math.random() * 2) + 1; // 1 or 2
+  for (let i = 0; i < additionalBombs; i++) {
+    let placed = false;
+    let attempts = 0;
+    while (!placed && attempts < 100) { // limit attempts to avoid infinite loop
+      let r = Math.floor(Math.random() * rows);
+      let c = Math.floor(Math.random() * columns);
+      if (!board[r][c].src.includes(bombCandy)) {
+        // Check if placing here would form 3 in a row horizontally
+        let canPlace = true;
+        if (c >= 2 && board[r][c - 1].src.includes(bombCandy) && board[r][c - 2].src.includes(bombCandy)) {
+          canPlace = false;
+        } 
+        if (c <= columns - 3 && board[r][c + 1].src.includes(bombCandy) && board[r][c + 2].src.includes(bombCandy)) {
+          canPlace = false;
+        }
+        // Check vertically
+        if (r >= 2 && board[r - 1][c].src.includes(bombCandy) && board[r - 2][c].src.includes(bombCandy)) {
+          canPlace = false;
+        }
+        if (r <= rows - 3 && board[r + 1][c].src.includes(bombCandy) && board[r + 2][c].src.includes(bombCandy)) {
+          canPlace = false;
+        }
+        if (canPlace) {
+          board[r][c].src = "./images/" + bombCandy + ".png";
+          bombsAdded++;
+          bombCount++;
+          placed = true;
+        }
       }
-      if (c <= columns - 3 && board[r][c + 1].src.includes(bombCandy) && board[r][c + 2].src.includes(bombCandy)) {
-        canPlace = false;
-      }
-      // Check vertically
-      if (r >= 2 && board[r - 1][c].src.includes(bombCandy) && board[r - 2][c].src.includes(bombCandy)) {
-        canPlace = false;
-      }
-      if (r <= rows - 3 && board[r + 1][c].src.includes(bombCandy) && board[r + 2][c].src.includes(bombCandy)) {
-        canPlace = false;
-      }
-      if (canPlace) {
-        board[r][c].src = "./images/" + bombCandy + ".png";
-        bombsAdded++;
-        bombCount++;
-        placed = true;
-      }
+      attempts++;
     }
-    attempts++;
   }
-}
 }
 
 //fuction refers to the tile that was clicked before dragging
@@ -219,6 +240,10 @@ function dragOver(e) {
 }
 
 function dragEnter(e) {
+  e.preventDefault();
+}
+
+function dragLeave(e) {
   e.preventDefault();
 }
 
@@ -261,12 +286,14 @@ function dragEnd() {
 
     if (validMove) {
       playerStarted = true;
-      moveCount++;
+      player.addMove();
 
       // show message every 3 valid moves
-      if (moveCount % 3 == 0) {
+      if (moveCount % 3 === 0) {
         let randomMessage = messages[Math.floor(Math.random() * messages.length)];
         showMessage(randomMessage);
+        player.addMove(); // increments moves
+        moveCount++; // add this line
       }
 
       // trigger bomb if any of the swapped tiles is a bomb
@@ -297,16 +324,16 @@ function crushThree() {
       let candy3 = board[r][c + 2];
 
       // if these 3 are the same (and not blank)
-      if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+      if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
         candy1.src = "./images/blank.png";
         candy2.src = "./images/blank.png";
         candy3.src = "./images/blank.png";
-        score += 30;
+        player.addScore(30);
 
         // check if there's a 4th one next to it (horizontal)
-        if (c + 3 < columns && board[r][c + 3].src == candy1.src) {
+        if (c + 3 < columns && board[r][c + 3].src === candy1.src) {
           board[r][c + 3].src = "./images/blank.png";
-          score += 10;
+          player.addScore(30);
           newBombReady = true; // get ready to make a bomb next
         }
       }
@@ -322,16 +349,16 @@ function crushThree() {
       let candy3 = board[r + 2][c];
 
       // if these 3 are the same (and not blank)
-      if (candy1.src == candy2.src && candy2.src == candy3.src && !candy1.src.includes("blank")) {
+      if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
         candy1.src = "./images/blank.png";
         candy2.src = "./images/blank.png";
         candy3.src = "./images/blank.png";
         score += 30;
 
         // check if there's a 4th one below it (vertical)
-        if (r + 3 < rows && board[r + 3][c].src == candy1.src) {
+        if (r + 3 < rows && board[r + 3][c].src === candy1.src) {
           board[r + 3][c].src = "./images/blank.png";
-          score += 10;
+          player.addScore(30);
           newBombReady = true; // get ready to make a bomb next
         }
       }
@@ -340,60 +367,60 @@ function crushThree() {
 }
 
 function checkValid() {
-    //check rows
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns - 2; c++) {
-            let candy1 = board[r][c];
-            let candy2 = board[r][c + 1];
-            let candy3 = board[r][c + 2];
+  //check rows
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns - 2; c++) {
+      let candy1 = board[r][c];
+      let candy2 = board[r][c + 1];
+      let candy3 = board[r][c + 2];
 
-            if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
-                return true;
-            }
-        }
+      if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
+        return true;
+      }
     }
+  }
 
-    //check columns
-    for (let c = 0; c < columns; c++) {
-        for (let r = 0; r < rows - 2; r++) {
-            let candy1 = board[r][c];
-            let candy2 = board[r + 1][c];
-            let candy3 = board[r + 2][c];
+  //check columns
+  for (let c = 0; c < columns; c++) {
+    for (let r = 0; r < rows - 2; r++) {
+      let candy1 = board[r][c];
+      let candy2 = board[r + 1][c];
+      let candy3 = board[r + 2][c];
 
-            if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
-                return true;
-            }
-        }
+      if (candy1.src === candy2.src && candy2.src === candy3.src && !candy1.src.includes("blank")) {
+        return true;
+      }
     }
+  }
 
-    return false;
+  return false;
 }
 
 function crushCandy() {
   crushThree();
-  document.getElementById("score").innerText = score;
+  document.getElementById("score").innerText = player.score;
 
   // check if score reached 1000
-  if (score >= 1000) {
+  if (player.score >= 1000) {
     endGame();
   }
 }
 
 function slideCandy() {
-    for (let c = 0; c < columns; c++) {
-        let ind = rows - 1;
+  for (let c = 0; c < columns; c++) {
+    let ind = rows - 1;
 
-        for (let r = rows-1; r >= 0; r--) {
-            if (!board[r][c].src.includes("blank")) {
-                board[ind][c].src = board[r][c].src;
-                ind -= 1;
-            }
-        }
-
-        for (let r = ind; r >= 0; r--) {
-            board[r][c].src = "./images/blank.png";
-        }
+    for (let r = rows - 1; r >= 0; r--) {
+      if (!board[r][c].src.includes("blank")) {
+        board[ind][c].src = board[r][c].src;
+        ind -= 1;
+      }
     }
+
+    for (let r = ind; r >= 0; r--) {
+      board[r][c].src = "./images/blank.png";
+    }
+  }
 }
 
 function generateCandy() {
@@ -434,11 +461,12 @@ function explodeBomb(r, c) {
         // if the crushed candy is a bomb, decrease count too
         if (board[i][j].src.includes("Choco")) {
           bombCount--;
-          if (bombCount < 0) bombCount = 0;
+          if (bombCount < 0) {
+            bombCount = 0;
+          }   
         }
-
         board[i][j].src = "./images/blank.png"; // crush candy
-        score += 10;
+        player.addScore(30);
       }
     }
   }
@@ -458,7 +486,7 @@ function triggerBomb(r, c) {
         tile.style.transition = "0.2s";
         tile.style.filter = "brightness(2)"; // makes it look like a flash
         setTimeout(() => {
-        tile.style.filter = "brightness(1)"; // back to normal
+          tile.style.filter = "brightness(1)"; // back to normal
         }, 200);
       }
     }
@@ -471,7 +499,7 @@ function triggerBomb(r, c) {
         let tile = board[i][j];
         if (tile.src.includes(targetColor) || tile.src.includes("Choco")) {
           tile.src = "./images/blank.png";
-          score += 10;
+          player.addScore(30);
         }
       }
     }
@@ -562,7 +590,8 @@ function resetGame() {
   newBombReady = false;
 
   // clear score display
-  document.getElementById("score").innerText = score;
+  player.reset();
+  document.getElementById("score").innerText = player.score;
 
   // clear board
   let boardEl = document.getElementById("board");
