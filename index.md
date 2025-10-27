@@ -7,6 +7,7 @@
 - [Perlin Noise](perlin-noise)
 - [Perlin Bubbles](perlin-bubbles)
 - [Terrain Generation](terrain-generation)
+- [Grid Demo](grid-demo)
 
 ## Assignment
 - [Interactive Scene](Interactive Scene)
