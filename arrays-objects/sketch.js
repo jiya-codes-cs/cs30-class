@@ -531,7 +531,8 @@ function showEndMessage(text) {
   box.style.top = "50%";
   box.style.left = "50%";
   box.style.transform = "translate(-50%, -50%) scale(0)";
-  box.style.background = "white";
+  box.style.background = "lightblue";
+  box.style.borderColor = "slategray";
   box.style.padding = "30px";
   box.style.textAlign = "center";
   box.style.borderRadius = "10px";
