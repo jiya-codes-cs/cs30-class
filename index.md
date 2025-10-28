@@ -8,7 +8,7 @@
 - [Perlin Bubbles](perlin-bubbles)
 - [Terrain Generation](terrain-generation)
 - [Grid Demo](grid-demo)
-
+- [Rectangle Neighbour Demo](rectangle-neighbour-demo)
 
 ## Assignment
 - [Interactive Scene](Interactive Scene)
