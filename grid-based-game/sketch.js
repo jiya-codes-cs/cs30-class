@@ -9,7 +9,7 @@
 // - Make the grid (windowWidth && windowHeight) {DONE}
 // - Add the mindsweeper thing like 1, 2 etc and then randomize it
 // - Add the tunnel in the end position 
-// - Add boulders in the end, money bag randomized && insect somewhere near the boulder
+// - Add boulders in the end, money bag randomized && insect somewhere near the boulder (use textures refer to OpenGameArt)
 // - Add the character that can move with the mouse && arrows
 // - Add inventory at the bottom of the scrreen so take out 12% of the windowWidth and then add that
 // - Display the rules above
