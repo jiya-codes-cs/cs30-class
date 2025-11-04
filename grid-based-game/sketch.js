@@ -85,3 +85,4 @@ function generateRandomGrid(cols, rows) {
   }
   return newGrid;
 }
+
