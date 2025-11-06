@@ -116,24 +116,29 @@ function generateRandomGrid(cols, rows) {
 
 // this function genrates obstacles 
 function genrateObstacles() {
-  // For now add 6 boulders
+  // For now add 6 boulders (if needed we can adjust later)
   for(let i = 0; i < 6; i++) {
     let x = floor(random(GRID_SIZE));
     let y = floor(random(GRID_SIZE));
     if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
+      // sets boulders position to x:10 and y:20 for example while returning an array length 1 
+      // instead of it being separate x and y values and returning an array length of 2
       boulders.push({x, y});
+    }
+  }
+
+  // Add 4 money bags
+  for(let i = 0; i < 4; i++) {
+    let x = floor(random(GRID_SIZE));
+    let y = floor(random(GRID_SIZE));
+    if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
+      moneyBags.push({x, y});
     }
   }
 }
 
 
-
-
-
-
-
-
-function mousePressed() {
+function keysPressed() {
   let x = Math.floor(mouseX/cellSize);
   let y = Math.floor(mouseY/cellSize);
 
