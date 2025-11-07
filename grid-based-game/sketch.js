@@ -17,19 +17,29 @@
 // - Add Congratulations and Play Again button at the end
 // - Add sound effects or just one backgound sound
 
-let GRID_SIZE;
+let theGrid;
+const GRID_SIZE = 10;
 let cellSize;
+
 let playerX = 0;
 let playerY = 0;
 
+let tunnelX, tunnelY;
+let boulders = [];
+let moneyBags = [];
+
+let gameWon = false;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
+
   if (width < height) {
-    cellSize = height * 0.88/ GRID_SIZE ; //leaving 12% for inventory section at the bottom 
+    cellSize = height * 0.88 / GRID_SIZE ; //leaving 12% for inventory section at the bottom 
   }
   else {
-    cellSize = width * 0.88/GRID_SIZE; //leaving 12% for inventory section at the bottom
+    cellSize = width * 0.88 /GRID_SIZE; //leaving 12% for inventory section at the bottom
   }
+
   // creates the grid
   theGrid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 
@@ -37,13 +47,24 @@ function setup() {
   tunnelX = GRID_SIZE - 1;
   tunnelY = GRID_SIZE - 1;
 
-  // generates boulders and money bags
-  genrateObstacles();
+  // generates boulders and money bags 
+  generateObstacles();
 }
 
 function draw() {
-  background(220);
+  background(200);
+
+  displayRules();
   showGrid();
+  drawPlayer();
+  drawTunnel();
+  drawBoulders();
+  drawMoneyBags();
+  drawInventoryBar();
+
+  if (gameWon) {
+    displayWinMessage();
+  }
 }
 
 function showGrid() {
@@ -68,13 +89,15 @@ function drawTunnel() {
 
 function drawBoulders() {
   fill("grey");
-  square(boulder.x * cellSize, boulder.y * cellSize, cellSize);
+  for (let boulder of boulders) {
+    square(boulder.x * cellSize, boulder.y * cellSize, cellSize);
+  }
 }
 
 function drawMoneyBags() {
   fill("gold");
   for(let bag of moneyBags) {
-    square(boulder.x * cellSize, boulder.y * cellSize, cellSize);
+    square(bag.x * cellSize, bag.y * cellSize, cellSize);
   }
 }
 
@@ -91,8 +114,8 @@ function drawInventoryBar() {
 function displayRules() {
   fill("black");
   textSize(16);
-  textAlign(TOP, LEFT);
-  text("• You need to get to the end of the tunnel. • Collect as many money bags as you can! •Buy inventory with that money to kill the bug and reach the tunnel. •Use Arrow keys to move. •", 10, 10);
+  textAlign(LEFT, TOP);
+  text("Use arrow keys to move. Reach the GOLD tunnel to win!", 10, 10);
 }
 
 function displayWinMessage() {
@@ -111,13 +134,13 @@ function generateRandomGrid(cols, rows) {
       grid[y].push(0);
     }
   }
-  return newGrid;
+  return grid;
 }
 
 // this function genrates obstacles 
-function genrateObstacles() {
-  // For now add 6 boulders (if needed we can adjust later)
-  for(let i = 0; i < 6; i++) {
+function generateObstacles() {
+  // Add 6 boulders
+  for (let i = 0; i < 6; i++) {
     let x = floor(random(GRID_SIZE));
     let y = floor(random(GRID_SIZE));
     if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
@@ -128,7 +151,7 @@ function genrateObstacles() {
   }
 
   // Add 4 money bags
-  for(let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++) {
     let x = floor(random(GRID_SIZE));
     let y = floor(random(GRID_SIZE));
     if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
@@ -137,21 +160,44 @@ function genrateObstacles() {
   }
 }
 
-
 function keysPressed() {
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
+  if (gameWon)  {
+    return;
+  }
 
-  toggleCell(x, y);
+  let nextX = playerX;
+  let nextY = playerY;
+
+  if (keyCode === LEFT_ARROW && playerX > x) {
+    nextX--;
+  }
+  if (keyCode === RIGHT_ARROW && playerX < GRID_SIZE - 1) {
+    nextX++;
+  }
+  if (keyCode === UP_ARROW && playerY > 0) {
+    nextY--;
+  }
+  if (keyCode === DOWN_ARROW && playerX < GRID_SIZE - 1) {
+    nextY++;
+  }
+
+  // Checks boulders before moving
+  if(!isBoulder (nextX, nextY)) {
+    playerX = nextX;
+    playerY = nextY;
+  }
+
+  // Checks if we reached a tunnel
+  if (playerX === tunnelX && playerY === tunnelY) {
+    gameWon = true;
+  }
 }
 
-function toggleCell(x, y) {
-  if (theGrid[y][x] === 1) {
-    theGrid[y][x] = 0;
+function isBoulder(x, y) {
+  for(let boulder of boulders) {
+    if(boulder.x === x && boulder.y === y) {
+      return true;
+    }
   }
-  else if (theGrid[y][x] === 0) {
-    theGrid[y][x] = 1;
-  }
+  return false;
 }
-
-
