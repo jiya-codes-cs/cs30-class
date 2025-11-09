@@ -21,34 +21,36 @@ let theGrid;
 const GRID_SIZE = 10;
 let cellSize;
 
-let playerX = 0;
-let playerY = 0;
+let playerCol = 0;
+let playerRow = 0;
 
-let tunnelX, tunnelY;
-let boulders = [];
-let moneyBags = [];
+let tunnelCol;
+let tunnelRow;
+
+let boulderList = [];
+let moneyBagList = [];
 
 let gameWon = false;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  if (width < height) {
-    cellSize = height * 0.88 / GRID_SIZE ; //leaving 12% for inventory section at the bottom 
-  }
-  else {
-    cellSize = width * 0.88 /GRID_SIZE; //leaving 12% for inventory section at the bottom
-  }
+  //leaving 12% for inventory section at the bottom
+  const gridAreaHeight = height * 0.88;  
+  cellSize = min(gridAreaHeight, width) / GRID_DIMENSION;
 
   // creates the grid
   theGrid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 
   // places tunnel (goal)
-  tunnelX = GRID_SIZE - 1;
-  tunnelY = GRID_SIZE - 1;
+  tunnelCol = GRID_SIZE - 1;
+  tunnelRow = GRID_SIZE - 1;
 
   // generates boulders and money bags 
   generateObstacles();
+
+  // Calculates Mindsweeper numbers and logic 
+  addMindsweeperNumbers();
 }
 
 function draw() {
@@ -79,24 +81,24 @@ function showGrid() {
 
 function drawPlayer() {
   fill("blue");
-  square(playerX * cellSize, playerY * cellSize, cellSize);
+  square(playerCol * cellSize, playerRow * cellSize, cellSize);
 }
 
 function drawTunnel() {
   fill("black");
-  square(tunnelX * cellSize, tunnelY * cellSize, cellSize);
+  square(tunnelCol * cellSize, tunnelRow * cellSize, cellSize);
 }
 
 function drawBoulders() {
   fill("grey");
-  for (let boulder of boulders) {
+  for (let boulder of boulderList) {
     square(boulder.x * cellSize, boulder.y * cellSize, cellSize);
   }
 }
 
 function drawMoneyBags() {
   fill("gold");
-  for(let bag of moneyBags) {
+  for(let bag of moneyBagList) {
     square(bag.x * cellSize, bag.y * cellSize, cellSize);
   }
 }
@@ -143,10 +145,10 @@ function generateObstacles() {
   for (let i = 0; i < 6; i++) {
     let x = floor(random(GRID_SIZE));
     let y = floor(random(GRID_SIZE));
-    if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
+    if ((x !== 0 || y !== 0) && (x !== tunnelCol || y !== tunnelRow)) {
       // sets boulders position to x:10 and y:20 for example while returning an array length 1 
       // instead of it being separate x and y values and returning an array length of 2
-      boulders.push({x, y});
+      boulderList.push({x, y});
     }
   }
 
@@ -154,8 +156,8 @@ function generateObstacles() {
   for (let i = 0; i < 4; i++) {
     let x = floor(random(GRID_SIZE));
     let y = floor(random(GRID_SIZE));
-    if ((x !== 0 || y !== 0) && (x !== tunnelX || y !== tunnelY)) {
-      moneyBags.push({x, y});
+    if ((x !== 0 || y !== 0) && (x !== tunnelCol || y !== tunnelRow)) {
+      moneyBagList.push({x, y});
     }
   }
 }
@@ -165,36 +167,36 @@ function keysPressed() {
     return;
   }
 
-  let nextX = playerX;
-  let nextY = playerY;
+  let nextX = playerCol;
+  let nextY = playerRow;
 
-  if (keyCode === LEFT_ARROW && playerX > x) {
+  if (keyCode === LEFT_ARROW && playerCol > x) {
     nextX--;
   }
-  if (keyCode === RIGHT_ARROW && playerX < GRID_SIZE - 1) {
+  if (keyCode === RIGHT_ARROW && playerCol < GRID_SIZE - 1) {
     nextX++;
   }
-  if (keyCode === UP_ARROW && playerY > 0) {
+  if (keyCode === UP_ARROW && playerRow > 0) {
     nextY--;
   }
-  if (keyCode === DOWN_ARROW && playerX < GRID_SIZE - 1) {
+  if (keyCode === DOWN_ARROW && playerRow < GRID_SIZE - 1) {
     nextY++;
   }
 
   // Checks boulders before moving
   if(!isBoulder (nextX, nextY)) {
-    playerX = nextX;
-    playerY = nextY;
+    playerCol = nextX;
+    playerRow = nextY;
   }
 
   // Checks if we reached a tunnel
-  if (playerX === tunnelX && playerY === tunnelY) {
+  if (playerCol === tunnelCol && playerRow === tunnelRow) {
     gameWon = true;
   }
 }
 
 function isBoulder(x, y) {
-  for(let boulder of boulders) {
+  for(let boulder of boulderList) {
     if(boulder.x === x && boulder.y === y) {
       return true;
     }
