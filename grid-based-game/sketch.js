@@ -18,7 +18,7 @@
 // - Add sound effects or just one backgound sound
 
 let theGrid;
-const GRID_SIZE = 10;
+const GRID_SIZE = 15;
 let cellSize;
 
 let playerCol = 0;
@@ -37,7 +37,7 @@ function setup() {
 
   //leaving 12% for inventory section at the bottom
   const gridAreaHeight = height * 0.88;  
-  cellSize = min(gridAreaHeight, width) / GRID_DIMENSION;
+  cellSize = min(gridAreaHeight, width) / GRID_SIZE;
 
   // creates the grid
   theGrid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
@@ -50,7 +50,7 @@ function setup() {
   generateObstacles();
 
   // Calculates Mindsweeper numbers and logic 
-  addMindsweeperNumbers();
+  // addMindsweeperNumbers();
 }
 
 function draw() {
