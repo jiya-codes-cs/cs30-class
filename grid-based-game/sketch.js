@@ -4,19 +4,7 @@
 //
 // Extra for Experts:
 // - used do...while loops to keep randomizing positions until valid spots were found (no overlaps, fair placement for boulders and money bags)
-
-// TO DO LIST:
-// - Make the grid (windowWidth && windowHeight) {DONE}
-// - Add the mindsweeper thing like 1, 2 etc and then randomize it {Later}
-// - Add the tunnel in the end position {DONE}
-// - Add boulders in the end, money bag randomized && insect somewhere near the boulder (use textures and images refer to OpenGameArt)
-// - Add the character that can move with the mouse && arrows {DONE -> but figure out mouse}
-// - Add inventory at the bottom of the scrreen so take out 12% of the windowWidth and then add that {DONE}
-// - Customize Inventory
-// - Display the rules above
-// - Add money rain wehn they reach the Tunnel
-// - Add Congratulations and Play Again button at the end {DONE}
-// - Add sound effects or just one backgound sound
+// - used the arrow functions to check if boulders or moneybags in the list matches the grid cell 
 
 let theGrid;
 const GRID_SIZE = 15;
@@ -25,14 +13,32 @@ let cellSize;
 let playerCol = 0;
 let playerRow = 0;
 
-let tunnelCol;
-let tunnelRow;
+let chestCol;
+let chestRow;
 
 let boulderList = [];
 let moneyBagList = [];
 
 let gameWon = false;
 let moneyScore = 0;
+
+let chestImg; // stores the treasure chest image
+let moneyBagImg; // stores the money bag image
+let groundImg; // stores the ground tile image
+let boulderImg; // stores the boulder image
+let characterImg; // stores the character image
+let startScreenImg; // stores the start screen image
+let gameStarted = false;
+
+function preload() {
+  // load treasure chest image so it's ready before setup
+  chestImg = loadImage("treasureChest.jpg");
+  moneyBagImg = loadImage("moneyBag.png");
+  groundImg = loadImage("Ground.JPG");
+  boulderImg = loadImage("Boulders.jpg");
+  characterImg = loadImage("Character.jpg");// player character
+  startScreenImg = loadImage("startScreen.png"); // start screen image
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -47,21 +53,24 @@ function setup() {
   theGrid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 
   // places tunnel (goal)
-  tunnelCol = GRID_SIZE - 1;
-  tunnelRow = GRID_SIZE - 1;
+  chestCol = GRID_SIZE - 1;
+  chestRow = GRID_SIZE - 1;
 
-  // generates boulders and money bags 
-  generateObstacles(GRID_SIZE);
+  // this function generates boulders and money bags 
+  generateObstacles();
 }
 
 function draw() {
+  if (!gameStarted) {
+    image(startScreenImg, 0, 0, width, height);
+    return; // stop drawing the game until started
+  }
   background(200);
 
-  displayRules();
   showGrid();
   drawBoulders();
   drawMoneyBags();
-  drawTunnel();
+  drawChest();
   drawPlayer();
   drawInventoryBar();
   displayMoneyScore();
@@ -72,54 +81,82 @@ function draw() {
 }
 
 function showGrid() {
-  for (let y = 0; y < theGrid.length; y++) {
-    for (let x = 0; x < theGrid[0].length; x++) {
-      fill("white");
-      stroke(0);
-      square(x * cellSize, y * cellSize, cellSize);
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      // check if this cell is not a boulder, money bag, or tunnel
+      // checks if any boulder in the list matches this grid cell using an arrow function
+      // .some checks if this grid cell contains a boulder
+      let isBoulderCell = boulderList.some(b => b.col === col && b.row === row);
+
+      // checks if any money bag is at this grid cell using an arrow function
+      // .some checks if this grid cell contains a moneybag
+      let isMoneyBagCell = moneyBagList.some(bag => bag.col === col && bag.row === row);
+      let isChestCell = col === chestCol && row === chestRow;
+
+      if (!isBoulderCell && !isMoneyBagCell && !isChestCell) {
+        // draw ground tile
+        image(groundImg, col * cellSize, row * cellSize, cellSize, cellSize);
+      } 
+      else {
+        // leaving blank
+        // specific drawing functions will draw boulder/money/chest automatically
+      }
     }
   }
 }
 
 function drawPlayer() {
-  fill("blue");
-  square(playerCol * cellSize, playerRow * cellSize, cellSize);
+  // draw character image at player's current grid position
+  image(characterImg, playerCol * cellSize, playerRow * cellSize, cellSize, cellSize);
 }
 
-function drawTunnel() {
-  fill("black");
-  square(tunnelCol * cellSize, tunnelRow * cellSize, cellSize);
+function drawChest() {
+  // always draw the treasure chest image at the chest location
+  image(chestImg, chestCol * cellSize, chestRow * cellSize, cellSize, cellSize);
 }
 
 function drawBoulders() {
-  fill("grey");
   for (let boulder of boulderList) {
-    square(boulder.x * cellSize, boulder.y * cellSize, cellSize);
+    // draw the boulder image at the boulder's grid position
+    image(boulderImg, boulder.col * cellSize, boulder.row * cellSize, cellSize, cellSize);
   }
 }
 
 function drawMoneyBags() {
   fill("gold");
   for(let bag of moneyBagList) {
-    square(bag.x * cellSize, bag.y * cellSize, cellSize);
+    // draws the money bag images at the bag's grid locations
+    image(moneyBagImg, bag.col * cellSize, bag.row * cellSize, cellSize, cellSize);
   }
 }
 
 // this function creates the inventory section at the bottom
 function drawInventoryBar() {
   fill(230);
-  rect(0 , height * 0.88, width, height * 0.12); // this creates the bottom position  
+  rect(0, height * 0.88, width, height * 0.12);  
   fill("black");
   textSize(18);
-  textAlign(CENTER, CENTER); // deals with text alignment 
-  text("Inventory is here!", width / 2, height * 0.94);
-}
+  textAlign(LEFT, CENTER); 
+  text("Inventory:", 20, height * 0.94);
 
-function displayRules() {
-  fill("black");
-  textSize(16);
-  textAlign(LEFT, TOP);
-  text("Use arrow keys to move. Reach the GOLD tunnel to win!", 10, 10);
+  const totalBags = 8; // total slots
+  const startX = 150; // starting x for the first slot
+  const y = height * 0.92; // vertical position for images
+  const spacing = 50; // space between images
+
+  // draw the 8 money bag images
+  for (let i = 0; i < totalBags; i++) {
+    image(moneyBagImg, startX + i * spacing, y, 40, 40);
+
+    // if this bag has been collected, draw a checkmark
+    // assuming each bag gives 100 points this if statement would run smoothly
+    if (i < moneyScore / 100) {      
+      fill("green");
+      textSize(24);
+      // this is the position checkmark below image
+      text("✓", startX + i * spacing + 12, y + 45); 
+    }
+  }
 }
 
 function displayWinMessage() {
@@ -132,60 +169,44 @@ function displayWinMessage() {
 // this function genrates random grid 
 function generateRandomGrid(cols, rows) {
   let grid = [];
-  for (let y = 0; y < rows; y++) {
+  for (let row = 0; row < rows; row++) {
     grid.push([]);
-    for (let x = 0; x < cols; x++) {
-      grid[y].push(0);
+    for (let col = 0; col < cols; col++) {
+      grid[row].push(0);
     }
   }
   return grid;
 }
 
 // this function genrates obstacles 
-function generateObstacles(rowsToUse) {
-  // resets both lists to make sure there are no duplicates
-  boulderList = [];
-  moneyBagList = [];
-
-  // Add 6 boulders (randomized positions but not on start/tunnel)
-  for (let i = 0; i < 6; i++) {
-    let x, y;
-
-    // keep picking random x,y till we find a valid empty spot for the boulder
-    do {
-      x = floor(random(GRID_SIZE));
-      y = floor(random(rowsToUse));
-    } while (
-      x === 0 && y === 0 || x === tunnelCol && y === tunnelRow || // not at player start or not at tunnel
-      boulderList.some(b => b.x === x && b.y === y)  // no duplicate boulders
-    );
-
-    // sets boulders position to x:10 and y:20 for example while returning an array length 1 
-    // instead of it being separate x and y values and returning an array length of 2
-    boulderList.push({ x, y }); 
-  }
-
-  // Add 10 money bags (avoids boulders and each other)
-  for (let i = 0; i < 8; i++) {
-    let x, y;
-
-    // keeps looping until the bag spawns in a free spot (not on boulder, not overlapping)
-    do {
-      x = floor(random(GRID_SIZE));
-      y = floor(random(rowsToUse));
-    } while (
-      x === 0 && y === 0 || x === tunnelCol && y === tunnelRow ||  // not at player start or not at tunnel
-      boulderList.some(b => b.x === x && b.y === y) ||  // not on boulder
-      moneyBagList.some(bag => bag.x === x && bag.y === y)  // not overlapping another bag
-    );
-
-    moneyBagList.push({ x, y }); // pushes money bag object to list
-  }
+function generateObstacles() {
+  boulderList = generateObjects(6, "boulder");
+  moneyBagList = generateObjects(8, "moneyBag", boulderList);
 }
 
-function isBoulder(x, y) {
+// Helper function to generate objects
+function generateObjects(num, type, avoidList = []) {
+  const list = [];
+  for (let i = 0; i < num; i++) {
+    let col, row;
+
+    do {
+      col = floor(random(GRID_SIZE));
+      row = floor(random(GRID_SIZE));
+    } while (
+      col === 0 && row === 0 || col === chestCol && row === chestRow || // avoids player start and chest
+      list.some(obj => obj.col === col && obj.row === row) || // avoid duplicates
+      avoidList.some(obj => obj.col === col && obj.row === row) // avoid other type objects if needed
+    );
+
+    list.push({ col, row });
+  }
+  return list;
+}
+
+function isBoulder(col, row) {
   for(let boulder of boulderList) {
-    if(boulder.x === x && boulder.y === y) {
+    if(boulder.col === col && boulder.row === row) {
       return true;
     }
   }
@@ -193,54 +214,60 @@ function isBoulder(x, y) {
 }
 
 function keyPressed() {
-  if (gameWon) {
+  if (!gameStarted && keyCode === ENTER) {
+    gameStarted = true;
     return;
   }
 
-  let nextX = playerCol;
-  let nextY = playerRow;
+  if (gameWon || !gameStarted) {
+    return;
+  }
+  let nextCol = playerCol;
+  let nextRow = playerRow;
 
   if (key === "a" || key === "A") {
     if (playerCol > 0) {
-      nextX--;
+      nextCol--;
     }
   }
   else if (key === "d" || key === "D") {
     if (playerCol < GRID_SIZE - 1) {
-      nextX++;
+      nextCol++;
     }
   }
   else if (key === "w" || key === "W") {
     if (playerRow > 0) {
-      nextY--;
+      nextRow--;
     }
   }
   else if (key === "s" || key === "S") {
     if (playerRow < GRID_SIZE - 1) {
-      nextY++;
+      nextRow++;
     }
   }
 
   // Move if not a boulder
-  if (!isBoulder(nextX, nextY)) {
-    playerCol = nextX;
-    playerRow = nextY;
-    collectMoney(nextX, nextY);
+  if (!isBoulder(nextCol, nextRow)) {
+    playerCol = nextCol;
+    playerRow = nextRow;
+    collectMoney(nextCol, nextRow);
   }
 
   // Check for win
-  if (playerCol === tunnelCol && playerRow === tunnelRow) {
+  if (playerCol === chestCol && playerRow === chestRow) {
     gameWon = true;
   }
 }
 
 // removes money bag from board and updates score
-function collectMoney(x, y) {
+function collectMoney(col, row) {
   for (let i = moneyBagList.length - 1; i >= 0; i--) {
     let bag = moneyBagList[i];
-    if (bag.x === x && bag.y === y) {
-      moneyBagList.splice(i, 1); // removes bags from array and displays an empty spot
-      moneyScore += 100;         // this is the increment score for each money bag that you get
+    if (bag.col === col && bag.row === row) {
+      // removes bags from array and displays an empty spot
+      moneyBagList.splice(i, 1); 
+      // this is the increment score for each money bag that you get
+      moneyScore += 100;         
       break;
     }
   }
