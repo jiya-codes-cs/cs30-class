@@ -11,6 +11,7 @@
 - [Rectangle Neighbour Demo](rectangle-neighbour-demo)
 - [Game of Life](game-of-life)
 - [Basic OOP](basic-oop)
+- [Walker OOP](walker-oop)
 
 ## Assignment
 - [Interactive Scene](Interactive Scene)
