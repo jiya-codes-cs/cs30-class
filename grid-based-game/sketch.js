@@ -28,7 +28,9 @@ let groundImg; // stores the ground tile image
 let boulderImg; // stores the boulder image
 let characterImg; // stores the character image
 let startScreenImg; // stores the start screen image
+
 let gameStarted = false;
+let offsetX; 
 
 function preload() {
   // load treasure chest image so it's ready before setup
@@ -49,6 +51,8 @@ function setup() {
   //covers horizontally till the end of the screen  
   cellSize = min(width / GRID_SIZE, gridAreaHeight / GRID_SIZE);
 
+  // calculate horizontal offset to center the grid
+  offsetX = (width - GRID_SIZE * cellSize) / 2;
   // creates the grid
   theGrid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 
@@ -95,7 +99,7 @@ function showGrid() {
 
       if (!isBoulderCell && !isMoneyBagCell && !isChestCell) {
         // draw ground tile
-        image(groundImg, col * cellSize, row * cellSize, cellSize, cellSize);
+        image(groundImg, col * cellSize + offsetX, row * cellSize, cellSize, cellSize);
       } 
       else {
         // leaving blank
@@ -107,18 +111,18 @@ function showGrid() {
 
 function drawPlayer() {
   // draw character image at player's current grid position
-  image(characterImg, playerCol * cellSize, playerRow * cellSize, cellSize, cellSize);
+  image(characterImg, playerCol * cellSize + offsetX, playerRow * cellSize, cellSize, cellSize);
 }
 
 function drawChest() {
   // always draw the treasure chest image at the chest location
-  image(chestImg, chestCol * cellSize, chestRow * cellSize, cellSize, cellSize);
+  image(chestImg, chestCol * cellSize + offsetX, chestRow * cellSize, cellSize, cellSize);
 }
 
 function drawBoulders() {
   for (let boulder of boulderList) {
     // draw the boulder image at the boulder's grid position
-    image(boulderImg, boulder.col * cellSize, boulder.row * cellSize, cellSize, cellSize);
+    image(boulderImg, boulder.col * cellSize + offsetX, boulder.row * cellSize, cellSize, cellSize);
   }
 }
 
@@ -126,7 +130,7 @@ function drawMoneyBags() {
   fill("gold");
   for(let bag of moneyBagList) {
     // draws the money bag images at the bag's grid locations
-    image(moneyBagImg, bag.col * cellSize, bag.row * cellSize, cellSize, cellSize);
+    image(moneyBagImg, bag.col * cellSize + offsetX, bag.row * cellSize, cellSize, cellSize);
   }
 }
 
