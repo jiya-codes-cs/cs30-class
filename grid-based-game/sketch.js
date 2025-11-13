@@ -8,13 +8,14 @@
 // TO DO LIST:
 // - Make the grid (windowWidth && windowHeight) {DONE}
 // - Add the mindsweeper thing like 1, 2 etc and then randomize it {Later}
-// - Add the tunnel in the end position 
+// - Add the tunnel in the end position {DONE}
 // - Add boulders in the end, money bag randomized && insect somewhere near the boulder (use textures and images refer to OpenGameArt)
-// - Add the character that can move with the mouse && arrows
-// - Add inventory at the bottom of the scrreen so take out 12% of the windowWidth and then add that
+// - Add the character that can move with the mouse && arrows {DONE -> but figure out mouse}
+// - Add inventory at the bottom of the scrreen so take out 12% of the windowWidth and then add that {DONE}
+// - Customize Inventory
 // - Display the rules above
 // - Add money rain wehn they reach the Tunnel
-// - Add Congratulations and Play Again button at the end
+// - Add Congratulations and Play Again button at the end {DONE}
 // - Add sound effects or just one backgound sound
 
 let theGrid;
