@@ -3,6 +3,7 @@
 ## Demos
 - [Traffic Lights](traffic-lights)
 - [Bouncing Balls](bouncing-balls)
+- [Pairing Stuff](pair-programming)
 - [Generative Art](generative-art)
 - [Perlin Noise](perlin-noise)
 - [Perlin Bubbles](perlin-bubbles)
