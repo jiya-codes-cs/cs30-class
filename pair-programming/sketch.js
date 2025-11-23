@@ -44,17 +44,17 @@ class Ship {
 
   update() {
     // move ship -- you might want to use the keyIsDown() function here
-    if(keyIsDown(LEFT_ARROW) === true) {
-      x -= 1;
+    if(keyIsDown(LEFT_ARROW)) {
+      this.x -= 5;
     }
-    if(keyIsDown(RIGHT_ARROW) === true) {
-      x += 1;
+    if(keyIsDown(RIGHT_ARROW)) {
+      this.x += 5;
     }
-    if(keyIsDown(UP_ARROW) === true) {
-      y -= 1;
+    if(keyIsDown(UP_ARROW)) {
+      this.y -= 5;
     }
-    if(keyIsDown(DOWN_ARROW) === true) {
-      y += 1;
+    if(keyIsDown(DOWN_ARROW)) {
+      this.y += 5;
     }
 
     // if doing extra for experts, show bullet(s)
@@ -63,7 +63,7 @@ class Ship {
   display() {
     // show the ship
     noStroke();
-    image(this.x, this.y, this.theImage);
+    image(this.image, this.x, this.y);
   }
 
   handleKeyPress() {
@@ -83,10 +83,17 @@ class Ship {
 class Bullet {
   constructor(x, y, dx, dy, theImage) {
     // define the variables needed for the bullet here
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.image = theImage;
   }
 
   update() {
     // what does the bullet need to do during each frame? how do we know if it is off screen?
+    this.x = this.dx;
+    this.y = this.dy;
   }
 
   display() {
