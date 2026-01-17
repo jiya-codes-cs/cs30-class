@@ -17,6 +17,19 @@ class Question {
 }
 
 // defining the subclass
+// this allows for us to keep the code efficient without repeating the Question class again
+class KeyWordQuestion extends Question {
+  constructor(content, answer, snippet) {
+    
+    // super() calls the constructor of the parent Question class
+    // refernced from Inheritence OOP demo done in class
+    super(content, answer); // calls the content/answer to the question parent
+
+    // this.snippet is unique to KeywordQuestion 
+    this.snippet = snippet;
+  }
+}
+
 // will do that later
 
 class QuizGenerator {
