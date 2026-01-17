@@ -17,6 +17,7 @@
 - [Inheritance OOP](inheritance-oop)
 - [Shape Inheritace](shape-inheritance)
 - [Sierpinski Triangle](sierpinski-triangle)
+- [JS Crashcourse](js-crashcourse)
 
 ## Assignment
 - [Interactive Scene](Interactive Scene)
