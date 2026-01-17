@@ -1,12 +1,24 @@
 // Arrays and Objects Redo
 // Jiya Khalsa Bangar
 // 1 January 2026
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
 
-let MIN_QUESTION_COUNT = 1;
-let MAX_QUESTION_COUNT = 15;
+
+//Sources:
+// https://p5js.org/examples/input-elements-dom-form-elements/ (reference to p5js.dom library features)
+
+// Extra for Experts:
+// - I used Object-Oriented Programming (Inheritance with subclass)  
+// - Implemented a custom text cleaning algorithm
+// - Used p5js DOM elements for user input
+
+let MAX_QUESTIONS = 15;
+
+let inputField;
+let generateButton;
+let quizResults = [];
+
+let generator; // we will store our QuizGenerator here
+
 
 // defining the base class
 class Question {
@@ -29,8 +41,6 @@ class KeyWordQuestion extends Question {
     this.snippet = snippet;
   }
 }
-
-// will do that later
 
 class QuizGenerator {
   constructor() {
@@ -55,7 +65,7 @@ class QuizGenerator {
     return keywords;
   }
 
-
+  // Extra for experts
   // helper function that manually cleans punctuation from a string
   cleanPunctuation(word) {
     // searched up most commonly used punctuations on the web 
@@ -90,25 +100,68 @@ class QuizGenerator {
   
       // stores as an object
       // the .substring method is extracting first 50 characters of the text to show a small preveiw or snippet of the source
-      let newQuestion = new KeywordQuestion(questionTest, keyword, inputText.substring(0, 50));
+      let newQuestion = new KeyWordQuestion(questionTest, keyword, inputText.substring(0, 50));
       this.questionObjects.push(newQuestion);
   
     }
   }
 }
 
-let generator;
-
+// p5js setup 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  generator = new QuizGenerator();
 
-  // test runb
-  generator.generateQuiz("Programming reqires logic and reasoning.");
-  console.log(generator.questionObjects);
+  generator = new QuizGenerator(); // initialize the class
+
+  // created the text area where you can paste the text 
+  // referenced from p5js form elements 
+  inputField = createInput();
+  inputField.position(20, 50);
+  inputField.size(300, 150);
+
+  // created a p5js button tha generates the quiz
+  generateButton = createButton("Generate Quiz");
+  generateButton.position(20, 210);
+
+  // when the button is clicked we run the startQuiz function
+  generateButton.mousePressed(startQuiz);
+}
+
+
+// now we use the class 
+function startQuiz() {
+  let fullText = inputField.value();
+  let words = fullText.split(" ");
+
+  quizResults = []; // this clears the old quiz
+
+  for (let i = 0; i < words.length; i++) {
+    // look for long words about 8+ letters
+    if (words[i].length >= 8 && quizResults.length < MAX_QUESTIONS) {
+      
+      // ceated an object 
+      let questionObject = {
+        question: "Fill in the blank: The text mentions ________.",
+        answer: words[i],
+        wordLength: words[i].length
+      };
+
+      // pushes the question to an array
+      quizResults.push(questionObject);
+
+    } 
+  } 
 }
 
 function draw() {
   background(220);
   text("Check (F12) console for more information!", 20, 20);
+  text("Paste text here: ", 20, 40);
+  
+  // we will loop through the array to show the results on the screen
+  for (let i = 0; i < quizResults.length; i++) {
+    let y = 280 + i * 20;
+    // this displays the answer from the Object inside the Array
+    text(i + 1 + "." + quizResults[i].answer, 20, y);
+  }
 }
