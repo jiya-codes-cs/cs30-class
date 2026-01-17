@@ -44,8 +44,6 @@ class KeyWordQuestion extends Question {
 
 class QuizGenerator {
   constructor() {
-    this.rawText = "";
-    this.quizData = []; // 2d array to store [Question, Answer] 
     this.questionObjects = []; // array of question objects 
   }
 
@@ -83,11 +81,9 @@ class QuizGenerator {
   }
 
   generateQuiz(inputText) {
-    this.rawText = inputText;
-    let potentialKeywords = this.extractKeywords(this.rawText);
-  
+    
+    
     // resets aray for a re-run
-    this.quizData = [];
     this.questionObjects = [];
   
     // this loop creates questions
