@@ -25,50 +25,77 @@ class QuizGenerator {
     this.quizData = []; // 2d array to store [Question, Answer] 
     this.questionObjects = []; // array of question objects 
   }
-}
 
-// helper function extracts keyword
-// finds words to turn into fill in the blank
-extractKeywords(text) {
-  let words = words.split(" ");
-  let keywords = [];
+  // helper function extracts keyword
+  // finds words to turn into fill in the blank
+  extractKeywords(text) {
+    let words = text.split(" ");
+    let keywords = [];
+  
+    for (let i = 0; i < words.length; i++) {
+      // if a word is longer than 7 letters its a potential keyword
+      if(words[i].length > 7) {
+        let clean = this.cleanPunctuation(words[i]);
+        keywords.push(clean);
+      }
+    }
+    return keywords;
+  }
 
-  for (let i = 0; i < words.length; i++) {
-    // if a word is longer than 7 letters its a potential keyword
-    if(words[i].length > 7) {
-      keywords.push();
+
+  // helper function that manually cleans punctuation from a string
+  cleanPunctuation(word) {
+    // searched up most commonly used punctuations on the web 
+    let FORBIDDEN = [".", ",", "!", "?", "(",")",":", ";", "''", "/"];
+    let result = "";
+
+    for(let character of word) {
+      // .includes() checks if the current character is in our punctuation array
+      if (!FORBIDDEN.includes(character)) {
+        result += character;
+      }
+    }
+    // searched ai for this function -> toLowerCase()
+    return result.toLowerCase(); // lowercase makes it easier for matching 
+  }
+
+  generateQuiz(inputText) {
+    this.rawText = inputText;
+    let potentialKeywords = this.extractKeywords(this.rawText);
+  
+    // resets aray for a re-run
+    this.quizData = [];
+    this.questionObjects = [];
+  
+    // this loop creates questions
+    for (let i = 0; i < potentialKeywords.length && i < MAX_QUESTION_COUNT; i++) {
+      let keyword = potentialKeywords[i];
+      let questionTest = "Identify the missing word : The concept of ______ is central in this text.";
+  
+      // stores 2d array [Question, Answer] 
+      this.quizData.push([questionTest, keyword]);
+  
+      // stores as an object
+      // the .substring method is extracting first 50 characters of the text to show a small preveiw or snippet of the source
+      let newQuestion = new KeywordQuestion(questionTest, keyword, inputText.substring(0, 50));
+      this.questionObjects.push(newQuestion);
+  
     }
   }
-  return keywords;
 }
 
-generateQuiz(inputText) {
-  this.rawText = inputText;
-  let potentialKeywords = this.extractKeywords(this.rawText);
-  
-  // resets aray for a re-run
-  this.quizData = [];
-  this.questionObjects = [];
-
-  // this loop creates questions
-  for (let i = 0; i < potentialKeywords.length && i < MAX_QUESTION_COUNT; i++) {
-    let keyword = potentialKeywords[i];
-    let questionTest = "Identify the missing word : The concept of ______ is central in this text."
-
-    // stores 2d array [Question, Answer] 
-    this.quizData.push([questionTest, keyword]);
-
-    // stores as an object
-    let newQuestion = new KeywordQuestion(questionTest, keyword, inputText.substring(0, 50));
-    this.questionObjects.push(newQuestion);
-
-  }
-}
+let generator;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  generator = new QuizGenerator();
+
+  // test runb
+  generator.generateQuiz("Programming reqires logic and reasoning.");
+  console.log(generator.questionObjects);
 }
 
 function draw() {
   background(220);
+  text("Check (F12) console for more information!", 20, 20);
 }
