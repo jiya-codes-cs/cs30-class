@@ -1,4 +1,4 @@
-// Baasic OOP Syntax Demo
+// Basic OOP Syntax Demo
 
 
 class Dog{

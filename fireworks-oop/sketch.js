@@ -17,7 +17,7 @@ class Particle {
   display() {
     noStroke();
     fill(this.r, this.g, this.b, this.opacity);
-    circle(this.x, this.y, this.radius*2);
+    circle(this.x, this.y, this.radius * 2);
   }
 
   update() {
@@ -30,7 +30,7 @@ class Particle {
   }
 
   isDead() {
-    // return this.opacity <= 0;
+    return this.opacity <= 0;
   }
 }
 
@@ -64,3 +64,5 @@ function mousePressed() {
     theFireworks.push(someFirework);
   }
 }
+
+
