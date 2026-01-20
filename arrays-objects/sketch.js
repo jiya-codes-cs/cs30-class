@@ -2,6 +2,12 @@
 // Jiya Khalsa Bangar
 // 10 October, Friday, 2025
 
+// Sounces:
+// https://www.youtube.com/watch?v=-HvqnsD5XyM (Candy Crush Game refernces video)
+// https://www.youtube.com/watch?v=B6dQc8Tdy8s (Candy Crush Game refernces video set timeout refenced from here)
+// https://github.com/LastIberianLynx/Match-Battle-Crush (referenced image incoprporation in code and UI refernce)
+// https://github.com/zain358/Candy-Crush/blob/main/Candy%20Crush/script.js (referenced setInterval function)
+
 // Extra for Experts:
 // - Integrated HTML and CSS for UI
 // - Added object notation for player state (name, score, moves)
@@ -17,12 +23,14 @@ let board = [];
 let candies = ["Blue", "Orange", "Green", "Yellow", "Red", "Purple"];
 
 // Player object using object notation
+// Found a tutorial on how to use objects to keep variables like score, time and name organized in one place
 let player = {
   name: "Jiya",
   score: 0,
   moves: 0,
   addScore(points) {
     this.score += points;
+    // gets the element from HTML 
     document.getElementById("score").innerText = this.score;
   },
   addMove() {
@@ -35,15 +43,15 @@ let player = {
 };
 
 
-// Track selected tiles for drag and swap
+// tracks selected tiles for drag and swap
 let currentTile;
 let otherTile;
 
-// Game state flags
+// game state flags
 let playerStarted = false;
 let moveCount = 0;
 
-// Feedback and bomb setup
+// feedback and bomb setup
 let messages = ["Sweet!", "Delicious!", "Marvelous!", "Fantastic!", "Divine!", "Glorious!", "Lovely!"];
 let bombCandy = "Choco"; // this will be the bomb image
 let bombCount = 0;
@@ -57,6 +65,7 @@ window.onload = function() {
   document.getElementById("startScreen").style.display = "flex";
 
   // Set up game loop (but don't start yet)
+  // used setinterval so the game constantly checks for matches found this on StackOverflow
   gameInterval = setInterval(function() {
     if (playerStarted) {
       crushCandy();
@@ -109,7 +118,7 @@ function startGame() {
         
       tile.src = "./images/" + candy + ".png";
         
-      // implementing drag functionality
+      // implementing drag functionality - followed a guide for event listner 
       tile.addEventListener("dragstart", dragStart); // clicks on candy to initialize drag process
       tile.addEventListener("dragover", dragOver); // clicks on candy and moves it to drag the candy
       tile.addEventListener("dragenter", dragEnter); // dragging candy onto another candy
@@ -130,7 +139,7 @@ function startGame() {
 function placeStartingBombs() {
   let bombsAdded = 0;
 
-  // Step 1: Place two bombs together (horizontal or vertical)
+  // placed two bombs together (horizontal or vertical)
   let horizontal = Math.random() < 0.5;
   let r1, c1;
 
@@ -149,10 +158,11 @@ function placeStartingBombs() {
   bombCount += 2;
   bombsAdded += 2;
 
-  // Step 2: Place the third bomb at an extended position so that swapping it completes the set of 3
+  // Placed the third bomb at an extended position so that swapping it completes the set of 3
+  // refernced AI for this part as I could'nt figure out the part to keep all 3 bombs aligned vertically and horizontally (code modified by by me later but not written by me firsthand)
   let placedThird = false;
   if (horizontal) {
-    // Try to place at c1 + 3 (extend right), ensuring no 3 or more in a row
+    // Tried to place at c1 + 3 (extend right), ensuring no 3 or more in a row
     let extendC = c1 + 3;
     if (extendC < columns && !board[r1][extendC].src.includes(bombCandy) && !board[r1][c1 + 2].src.includes(bombCandy)) {
       board[r1][extendC].src = "./images/" + bombCandy + ".png";
@@ -161,7 +171,7 @@ function placeStartingBombs() {
       placedThird = true;
     } 
     else {
-      // Try to place at c1 - 3 (extend left), ensuring no 3 or more in a row
+      // Tried to place at c1 - 3 (extend left) ensuring no 3 or more in a row
       extendC = c1 - 3;
       if (extendC >= 0 && !board[r1][extendC].src.includes(bombCandy) && !board[r1][c1 - 2].src.includes(bombCandy)) {
         board[r1][extendC].src = "./images/" + bombCandy + ".png";
@@ -172,7 +182,7 @@ function placeStartingBombs() {
     }
   } 
   else {
-    // Try to place at r1 + 3 (extend down), ensuring no 3 or more in a column
+    // Try to place at r1 + 3 (extend down) ensuring no 3 or more in a column
     let extendR = r1 + 3;
     if (extendR < rows && !board[extendR][c1].src.includes(bombCandy) && !board[r1 + 2][c1].src.includes(bombCandy)) {
       board[extendR][c1].src = "./images/" + bombCandy + ".png";
@@ -181,7 +191,7 @@ function placeStartingBombs() {
       placedThird = true;
     } 
     else {
-      // Try to place at r1 - 3 (extend up), ensuring no 3 or more in a column
+      // Tried to place at r1 - 3 (extend up) ensuring no 3 or more in a column
       extendR = r1 - 3;
       if (extendR >= 0 && !board[extendR][c1].src.includes(bombCandy) && !board[r1 - 2][c1].src.includes(bombCandy)) {
         board[extendR][c1].src = "./images/" + bombCandy + ".png";
@@ -192,7 +202,7 @@ function placeStartingBombs() {
     }
   }
 
-  // Step 3: Place 1 or 2 more bombs randomly, ensuring no 3 in a row
+  // Place 1 or 2 more bombs randomly ensuring no 3 in a row
   let additionalBombs = Math.floor(Math.random() * 2) + 1; // 1 or 2
   for (let i = 0; i < additionalBombs; i++) {
     let placed = false;
@@ -229,25 +239,32 @@ function placeStartingBombs() {
 }
 
 //fuction refers to the tile that was clicked before dragging
+// here e stands for event it’s an object that holds info about the mouse
+// learned via AI and videos for better unserstanding
 function dragStart() {
   currentTile = this; 
 }
 
+// I found out browsers usually block dropping things on other things. 
+// preventDefault() stops the browser from blocking us so the candy can move.
 function dragOver(e) {
   e.preventDefault();
 }
 
 function dragEnter(e) {
+  // need this here too so the browser knows we want to allow the candy to enter this space
   e.preventDefault();
 }
 
 function dragLeave(e) {
+  // keeps the default 'blocking' behavior turned off
   e.preventDefault();
 }
 
 // this function refers to the target tile that was dropped on 
 function dragDrop() {
   otherTile = this;
+  // we don't need e here because this tells us which candy we dropped on
 }
 
 function dragEnd() {
@@ -440,6 +457,7 @@ function generateCandy() {
   }
 }
 
+// referenced from video in sources
 function showMessage(text) {
   let message = document.getElementById("message");
   message.innerText = text;
@@ -491,6 +509,7 @@ function triggerBomb(r, c) {
   }
 
   // delay the actual crush so player sees the lightning
+  // refernced syntax from video in sources
   setTimeout(() => {
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < columns; j++) {
@@ -568,6 +587,7 @@ function showEndMessage(text) {
   });
 
   // click to play again
+  // referncewd from video
   btn.addEventListener("click", () => {
     // shrink out before removing
     box.style.transform = "translate(-50%, -50%) scale(0)";

@@ -23,4 +23,3 @@
 - [Interactive Scene](Interactive Scene)
 - [Arrays and Objects](arrays-objects)
 - [2D Arrays](grid-based-game)
-- [Arrays and Objects Redo](arrays-and-objects-redo)
